@@ -2,6 +2,7 @@
 $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()->toArray() : [];
 @endphp
 <div x-data="{
+    vendor_id: @entangle('data.vendor_id'),
     rows: @js($items ?? []).length > 0 
         ? @js($items).map(item => ({
             id: item.id || Date.now(),
@@ -16,7 +17,7 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
     orderItems: @entangle('data.order_items'),
 
     fetchVariants(query) {
-        return fetch(`/api/product-variants?search=${query}`)
+        return fetch(`/api/product-variants?search=${query}&vendor_id=${this.vendor_id}`)
             .then(response => response.json())
             .catch(() => []);
     },
@@ -81,8 +82,12 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                         const selectedVariant = variants[selectedIndex];
                                         row.variant_id = selectedVariant.id; // Store variant ID in hidden input
                                         row.variant_name = selectedVariant.name; // Display variant name
-                                        row.unit_price = selectedVariant.vendor_price; // Set unit price
-                                        calculateTotal(row); // Recalculate the total
+                                        if (selectedVariant.vendor_prices && selectedVariant.vendor_prices.length > 0) {
+                                            row.unit_price = selectedVariant.vendor_prices[0].price;
+                                        } else {
+                                            row.unit_price = selectedVariant.vendor_price;
+                                        }
+                                        calculateTotal(row);
                                         isOpen = false; 
                                     }" />
                                 
@@ -98,7 +103,11 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                         <li @click="
                                                 row.variant_id = variant.id;
                                                 row.variant_name = variant.name;
-                                                row.unit_price = variant.vendor_price;
+                                                if (variant.vendor_prices && variant.vendor_prices.length > 0) {
+                                                    row.unit_price = variant.vendor_prices[0].price;
+                                                } else {
+                                                    row.unit_price = variant.vendor_price;
+                                                }
                                                 calculateTotal(row);
                                                 isOpen = false;"
                                             class="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"

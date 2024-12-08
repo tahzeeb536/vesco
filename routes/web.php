@@ -24,36 +24,14 @@ Route::get('/', function () {
 
 Route::middleware('api')->get('/api/product-variants', function (Request $request) {
     $search = $request->query('search', '');
-    return ProductVariant::where('name', 'like', "%$search%")
-        ->limit(25)
-        ->get(['id', 'name', 'vendor_price']);
+    $vendorId = $request->query('vendor_id', '');
+    return ProductVariant::with(['vendor_prices' => function($query) use($vendorId) {
+        $query->where('vendor_id', $vendorId);
+    }])
+    ->where('name', 'like', "%$search%")
+    ->limit(25)
+    ->get(['id', 'name', 'vendor_price']);
 });
-
-Route::middleware('api')->get('/api/variant-vendor-price', function (Request $request) {
-    $variant_id = $request->query('variant_id');
-    if(!empty($variant_id)) {
-        $variant = ProductVariant::where('id', $variant_id)->first();
-        if($variant) {
-            $vendor_id = $request->query('vendor_id') ?? '';
-            if($vendor_id) {
-                $vendor_price = VendorProductPrice::where('vendor_id', $vendor_id)
-                    ->where('product_variant_id', $variant->id)
-                    ->first();
-                if($vendor_price) {
-                    return $vendor_price->price;
-                }
-                else {
-                    return $variant->vendor_price;
-                }
-            }
-            else {
-                return $variant->vendor_price;
-            }
-        }
-    }
-    return 0;
-});
-
 
 Route::get('/stock-search-report', [ReportsController::class, 'generateReport'])->name('stock.report');
 Route::get('/stock-report/pdf', [ReportsController::class, 'downloadPdf'])->name('stock.report.pdf');

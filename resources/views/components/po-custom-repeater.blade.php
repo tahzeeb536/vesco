@@ -16,7 +16,7 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
     
     orderItems: @entangle('data.order_items'),
     fetchVariants(query) {
-        return fetch(`/api/product-variants?search=${query}`)
+        return fetch(`/api/product-variants?search=${query}&vendor_id=${this.vendor_id}`)
             .then(response => response.json())
             .catch(() => []);
     },
@@ -35,14 +35,14 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
     },
     syncOrderItems() {
         this.orderItems = JSON.stringify(this.rows);
-    },
-    setVariantPrice(variant_id) {
-        let vendor_id = this.vendor_id;
-        return fetch(`/api/variant-vendor-price?variant_id=${variant_id}&vendor_id=${vendor_id}`)
-            .then(response => response.json())
-            .catch(() => 0);
     }
-}" >
+}" 
+x-init="
+    $watch('vendor_id', () => {
+        rows = [{ id: Date.now(), variant_id: '', variant_name: '', quantity: 1, unit_price: 0, total_price: 0 }];
+        syncOrderItems();
+    });
+">
     <div class="overflow-x-auto relative bg-gray-200" style="height: 350px; overflow-y: auto;">
         <table class="min-w-full table-auto border border-gray-300" style="width: 100%;">
             <thead class="bg-gray-100 border-b border-gray-300">
@@ -98,11 +98,13 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                         const selectedVariant = variants[selectedIndex];
                                         row.variant_id = selectedVariant.id;
                                         row.variant_name = selectedVariant.name;
-                                        setVariantPrice(row.variant_id).then(price => {
-                                            row.unit_price = price;
-                                            calculateTotal(row);
-                                            isOpen = false; 
-                                        });
+                                        if (selectedVariant.vendor_prices && selectedVariant.vendor_prices.length > 0) {
+                                            row.unit_price = selectedVariant.vendor_prices[0].price;
+                                        } else {
+                                            row.unit_price = selectedVariant.vendor_price;
+                                        }
+                                        calculateTotal(row);
+                                        isOpen = false;
                                     }" />
                                 
                                 <!-- Hidden Input for Variant ID -->
@@ -117,11 +119,13 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                         <li @click="
                                                 row.variant_id = variant.id;
                                                 row.variant_name = variant.name;
-                                                setVariantPrice(row.variant_id).then(price => {
-                                                    row.unit_price = price;
-                                                    calculateTotal(row);
-                                                    isOpen = false;
-                                                });"
+                                                if (variant.vendor_prices && variant.vendor_prices.length > 0) {
+                                                    row.unit_price = variant.vendor_prices[0].price;
+                                                } else {
+                                                    row.unit_price = variant.vendor_price;
+                                                }
+                                                calculateTotal(row);
+                                                isOpen = false;"
                                             class="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
                                             :class="{'bg-gray-200': selectedIndex === i}"
                                             :id="'variant-item-' + i">
