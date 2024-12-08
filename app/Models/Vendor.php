@@ -34,7 +34,7 @@ class Vendor extends Model
         
     }
 
-    public function product_prices(): HasMany {
+    public function variant_prices(): HasMany {
         return $this->hasMany(VendorProductPrice::class, 'vendor_id', 'id');
     }
 

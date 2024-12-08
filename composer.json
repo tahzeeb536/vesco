@@ -9,6 +9,7 @@
         "aymanalhattami/filament-slim-scrollbar": "^2.0",
         "barryvdh/laravel-dompdf": "^3.0",
         "filament/filament": "^3.2",
+        "guava/filament-modal-relation-managers": "^1.1",
         "guzzlehttp/guzzle": "^7.2",
         "icetalker/filament-table-repeater": "^1.3",
         "laravel/framework": "^10.10",

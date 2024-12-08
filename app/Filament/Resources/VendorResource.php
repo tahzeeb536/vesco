@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 
 class VendorResource extends Resource
 {
@@ -291,6 +292,9 @@ class VendorResource extends Resource
                 //
             ])
             ->actions([
+                RelationManagerAction::make('vendor-product-price-relation-manager')
+                    ->label('Product Prices')
+                    ->relationManager(RelationManagers\VariantPricesRelationManager::make()),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
@@ -304,7 +308,7 @@ class VendorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ProductPricesRelationManager::class,
+            RelationManagers\VariantPricesRelationManager::class,
         ];
     }
 
