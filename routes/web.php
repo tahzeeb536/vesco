@@ -5,6 +5,7 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\PrintDocsController;
+use App\Models\VendorProductPrice;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,31 @@ Route::middleware('api')->get('/api/product-variants', function (Request $reques
     return ProductVariant::where('name', 'like', "%$search%")
         ->limit(25)
         ->get(['id', 'name', 'vendor_price']);
+});
+
+Route::middleware('api')->get('/api/variant-vendor-price', function (Request $request) {
+    $variant_id = $request->query('variant_id');
+    if(!empty($variant_id)) {
+        $variant = ProductVariant::where('id', $variant_id)->first();
+        if($variant) {
+            $vendor_id = $request->query('vendor_id') ?? '';
+            if($vendor_id) {
+                $vendor_price = VendorProductPrice::where('vendor_id', $vendor_id)
+                    ->where('product_variant_id', $variant->id)
+                    ->first();
+                if($vendor_price) {
+                    return $vendor_price->price;
+                }
+                else {
+                    return $variant->vendor_price;
+                }
+            }
+            else {
+                return $variant->vendor_price;
+            }
+        }
+    }
+    return 0;
 });
 
 

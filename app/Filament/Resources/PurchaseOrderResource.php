@@ -25,6 +25,7 @@ class PurchaseOrderResource extends Resource
                     ->label('Vendor')
                     ->required()
                     ->searchable()
+                    ->reactive()
                     ->getSearchResultsUsing(function (string $search) {
                         return \App\Models\Vendor::query()
                             ->where('full_name', 'like', "%{$search}%")

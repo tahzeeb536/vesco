@@ -2,6 +2,7 @@
 $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()->toArray() : [];
 @endphp
 <div x-data="{
+    vendor_id: @entangle('data.vendor_id'),
     rows: @js($items ?? []).length > 0 
         ? @js($items).map(item => ({
             id: item.id || Date.now(),
@@ -14,7 +15,6 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
         : [{ id: Date.now(), variant_id: '', variant_name: '', quantity: 1, unit_price: 0, total_price: 0 }],
     
     orderItems: @entangle('data.order_items'),
-
     fetchVariants(query) {
         return fetch(`/api/product-variants?search=${query}`)
             .then(response => response.json())
@@ -35,6 +35,12 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
     },
     syncOrderItems() {
         this.orderItems = JSON.stringify(this.rows);
+    },
+    setVariantPrice(variant_id) {
+        let vendor_id = this.vendor_id;
+        return fetch(`/api/variant-vendor-price?variant_id=${variant_id}&vendor_id=${vendor_id}`)
+            .then(response => response.json())
+            .catch(() => 0);
     }
 }" >
     <div class="overflow-x-auto relative bg-gray-200" style="height: 350px; overflow-y: auto;">
@@ -90,11 +96,13 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                     }"
                                     @keydown.enter.prevent="if (selectedIndex >= 0 && variants.length > 0) { 
                                         const selectedVariant = variants[selectedIndex];
-                                        row.variant_id = selectedVariant.id; // Store variant ID in hidden input
-                                        row.variant_name = selectedVariant.name; // Display variant name
-                                        row.unit_price = selectedVariant.vendor_price; // Set unit price
-                                        calculateTotal(row); // Recalculate the total
-                                        isOpen = false; 
+                                        row.variant_id = selectedVariant.id;
+                                        row.variant_name = selectedVariant.name;
+                                        setVariantPrice(row.variant_id).then(price => {
+                                            row.unit_price = price;
+                                            calculateTotal(row);
+                                            isOpen = false; 
+                                        });
                                     }" />
                                 
                                 <!-- Hidden Input for Variant ID -->
@@ -109,9 +117,11 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                         <li @click="
                                                 row.variant_id = variant.id;
                                                 row.variant_name = variant.name;
-                                                row.unit_price = variant.vendor_price;
-                                                calculateTotal(row);
-                                                isOpen = false;"
+                                                setVariantPrice(row.variant_id).then(price => {
+                                                    row.unit_price = price;
+                                                    calculateTotal(row);
+                                                    isOpen = false;
+                                                });"
                                             class="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
                                             :class="{'bg-gray-200': selectedIndex === i}"
                                             :id="'variant-item-' + i">
