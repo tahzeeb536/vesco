@@ -62,5 +62,10 @@ class ProductVariant extends Model
         return "{$articleNumber} - {$size} - {$color} - {$productName}";
     }
 
+    public function stockEntries() : HasMany
+    {
+        return $this->hasMany(StockEntry::class, 'product_variant_id', 'id');
+    }
+
 
 }
