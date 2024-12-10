@@ -71,10 +71,12 @@ class StockDetail extends Page implements Tables\Contracts\HasTable
         return [
             TextColumn::make('name')
                 ->label('Variant Name')
+                ->sortable()
                 ->searchable(),
 
             TextColumn::make('product.name_for_vendor')
                 ->label('Vendor Name')
+                ->sortable()
                 ->searchable(),
             
             TextColumn::make('stock')
@@ -84,6 +86,7 @@ class StockDetail extends Page implements Tables\Contracts\HasTable
 
             TextColumn::make('shelf_name')
                 ->label('Shelf Name')
+                ->sortable()
                 ->formatStateUsing(fn($state) => $state ?? 'N/A'),
             
             // TextColumn::make('rack_name')

@@ -5,6 +5,7 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\PrintDocsController;
+use App\Http\Controllers\ExportController;
 use App\Models\VendorProductPrice;
 
 /*
@@ -39,3 +40,6 @@ Route::get('/stock-report/pdf', [ReportsController::class, 'downloadPdf'])->name
 
 Route::get('/purchase-order/print-po/{record}', [PrintDocsController::class, 'printPO'])->name('print_po');
 Route::get('/purchase-order/print-po-no-price/{record}', [PrintDocsController::class, 'printPONoPrice'])->name('print_po_no_price');
+
+
+Route::get('/export-out-of-stock', [ExportController::class, 'exportOutOfStock'])->name('export.out_of_stock');

@@ -9,12 +9,13 @@ use App\Models\ProductVariant;
 use App\Models\StockEntry;
 use App\Models\Product;
 use App\Models\Shelf;
+use Filament\Pages\Actions\Action;
 
 class OutOfStock extends Page implements Tables\Contracts\HasTable
 {
     use Tables\Concerns\InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static ?string $navigationIcon = 'heroicon-o-document-minus';
     protected static string $view = 'filament.pages.out-of-stock';
 
     protected function getTableQuery()
@@ -99,6 +100,21 @@ class OutOfStock extends Page implements Tables\Contracts\HasTable
             //     ->label('Store Name')
             //     ->formatStateUsing(fn($state) => $state ?? 'N/A'),
 
+        ];
+    }
+
+    protected function getActions(): array
+    {
+        return [
+            Action::make('export_excel')
+                ->label('Export to Excel')
+                ->color('success')
+                ->icon('heroicon-o-document-arrow-down')
+                ->url(route('export.out_of_stock'))
+                ->extraAttributes([
+                    'target' => '_blank',
+                    'rel' => 'noopener noreferrer',
+                ])
         ];
     }
 }
