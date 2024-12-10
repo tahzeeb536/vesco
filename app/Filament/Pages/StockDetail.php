@@ -9,6 +9,7 @@ use App\Models\ProductVariant;
 use App\Models\StockEntry;
 use App\Models\Product;
 use App\Models\Shelf;
+use Filament\Pages\Actions\Action;
 
 class StockDetail extends Page implements Tables\Contracts\HasTable
 {
@@ -101,6 +102,21 @@ class StockDetail extends Page implements Tables\Contracts\HasTable
             //     ->label('Store Name')
             //     ->formatStateUsing(fn($state) => $state ?? 'N/A'),
 
+        ];
+    }
+
+    protected function getActions(): array
+    {
+        return [
+            Action::make('export_excel')
+                ->label('Export to Excel')
+                ->color('success')
+                ->icon('heroicon-o-document-arrow-down')
+                ->url(route('export.stock_detail'))
+                ->extraAttributes([
+                    'target' => '_blank',
+                    'rel' => 'noopener noreferrer',
+                ])
         ];
     }
 }

@@ -43,3 +43,4 @@ Route::get('/purchase-order/print-po-no-price/{record}', [PrintDocsController::c
 
 
 Route::get('/export-out-of-stock', [ExportController::class, 'exportOutOfStock'])->name('export.out_of_stock');
+Route::get('/export-stock-detail', [ExportController::class, 'exportStockDetail'])->name('export.stock_detail');
