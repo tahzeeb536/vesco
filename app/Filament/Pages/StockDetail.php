@@ -15,7 +15,7 @@ class StockDetail extends Page implements Tables\Contracts\HasTable
 {
     use Tables\Concerns\InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-check-circle';
+    protected static ?string $navigationIcon = 'heroicon-o-document-check';
     protected static string $view = 'filament.pages.stock-detail';
 
     protected function getTableQuery()
