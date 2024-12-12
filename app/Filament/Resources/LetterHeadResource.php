@@ -50,9 +50,9 @@ class LetterHeadResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('date')->label('Date')->sortable()->searchable(),
-                TextColumn::make('ref_no')->label('Reference #')->sortable()->searchable(),
                 TextColumn::make('title')->label('Title')->limit(50)->searchable(),
+                TextColumn::make('ref_no')->label('Reference #')->sortable()->searchable(),
+                TextColumn::make('date')->label('Date')->sortable()->searchable(),
             ])
             ->filters([
                 //

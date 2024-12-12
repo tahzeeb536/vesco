@@ -42,5 +42,9 @@ Route::get('/purchase-order/print-po/{record}', [PrintDocsController::class, 'pr
 Route::get('/purchase-order/print-po-no-price/{record}', [PrintDocsController::class, 'printPONoPrice'])->name('print_po_no_price');
 
 
+Route::get('/letter-head/print-with-logo/{record}', [PrintDocsController::class, 'print_letter_head_with_logo'])->name('print_letter_head_with_logo');
+Route::get('/letter-head/print-without-logo/{record}', [PrintDocsController::class, 'print_letter_head_without_logo'])->name('print_letter_head_without_logo');
+Route::get('/letter-head/print-without-stamp/{record}', [PrintDocsController::class, 'print_letter_head_without_stamp'])->name('print_letter_head_without_stamp');
+
 Route::get('/export-out-of-stock', [ExportController::class, 'exportOutOfStock'])->name('export.out_of_stock');
 Route::get('/export-stock-detail', [ExportController::class, 'exportStockDetail'])->name('export.stock_detail');
