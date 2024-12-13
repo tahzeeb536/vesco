@@ -9,7 +9,6 @@ use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Illuminate\Support\Facades\Log;
-use App\Http\Requests\PurchaseOrderRequest;
 
 class PurchaseOrderResource extends Resource
 {
@@ -48,8 +47,7 @@ class PurchaseOrderResource extends Resource
                 Forms\Components\Hidden::make('order_items')
                     ->required()
                     ->reactive()
-                    ->dehydrated(true),
-                    
+                    ->dehydrated(true), 
 
                 Forms\Components\Grid::make(1)
                     ->schema([

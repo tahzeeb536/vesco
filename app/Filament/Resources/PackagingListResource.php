@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\VendorResource\Pages;
-use App\Filament\Resources\VendorResource\RelationManagers;
-use App\Models\Vendor;
+use App\Filament\Resources\PackagingListResource\Pages;
+use App\Filament\Resources\PackagingListResource\RelationManagers;
+use App\Models\PackagingList;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,43 +12,26 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 
-class VendorResource extends Resource
+class PackagingListResource extends Resource
 {
-    protected static ?string $model = Vendor::class;
+    protected static ?string $model = PackagingList::class;
 
-    public static function getNavigationLabel(): string
-    {
-        return 'Vendors';
-    }
-
-    public static function getNavigationIcon(): string
-    {
-        return 'heroicon-o-building-storefront';
-    }
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('first_name')
-                    ->required()
-                    ->label('First Name'),
-                Forms\Components\TextInput::make('last_name')
-                    ->label('Last Name'),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->label('Email Address'),
-                Forms\Components\TextInput::make('organization')
-                    ->label('Organization'),
-                Forms\Components\TextInput::make('phone')
-                    ->tel()
-                    ->required()
-                    ->label('Phone'),
-                Forms\Components\TextInput::make('address')
-                    ->label('Address'),
-                Forms\Components\Select::make('country')
+                Forms\Components\DatePicker::make('date')
+                    ->required(),
+                Forms\Components\TextInput::make('e_form_no')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('invoice_no')
+                    ->maxLength(255)
+                    ->required(),
+                Forms\Components\DatePicker::make('invoice_date'),
+                Forms\Components\Select::make('country_of_origin')
                     ->options([
                         'Afghanistan' => 'Afghanistan',
                         'Albania' => 'Albania',
@@ -245,56 +228,89 @@ class VendorResource extends Resource
                         'Zimbabwe' => 'Zimbabwe',
                     ])
                     ->searchable()
+                    ->required(),
+                Forms\Components\Select::make('customer_id')
+                    ->label('Customer')
                     ->required()
-                    ->label('Country'),
-                Forms\Components\TextInput::make('city')
-                    ->label('City'),
-                Forms\Components\Select::make('currency')
-                    ->options([
-                        'pkr' => 'PKR',
-                        'usd' => 'USD',
-                        'gbp' => 'GBP',
-                        'eur' => 'EUR',
-                    ])
-                    ->label('Currency'),
-                Forms\Components\Select::make('status')
+                    ->searchable()
+                    ->reactive()
+                    ->getSearchResultsUsing(function (string $search) {
+                        return \App\Models\Customer::query()
+                            ->where('full_name', 'like', "%{$search}%")
+                            ->limit(50)
+                            ->pluck('full_name', 'id');
+                    })
+                    ->getOptionLabelUsing(function ($value) {
+                        return \App\Models\Vendor::find($value)?->full_name ?? '';
+                    }),
+                Forms\Components\TextInput::make('port_of_landing')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('port_of_discharge')
+                    ->maxLength(255),
+
+                Forms\Components\Hidden::make('packaging_boxes')
                     ->required()
-                    ->options([
-                        '1' => 'Active',
-                        '0' => 'Inactive',
+                    ->reactive()
+                    ->dehydrated(true),
+
+                Forms\Components\Grid::make(1)
+                ->schema([
+                    Forms\Components\View::make('components.packaging-list-custom-repeater')
+                        ->label('Items')
+                        ->columnSpan('full')
+                ])
+                ->hiddenOn('view'),
+
+                Forms\Components\Grid::make(1)
+                    ->schema([
+                        Forms\Components\View::make('components.packaging-list-view-custom-repeater')
+                            ->label('Items')
+                            ->columnSpan('full')
                     ])
-                    ->default(1)
-                    ->label('Status'),
-                Forms\Components\TextInput::make('opening_balance')
-                    ->numeric()
-                    ->default(0)
-                    ->label('Opening Balance'),
-            ]
-        );
+                    ->hiddenOn(['create', 'edit']),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('first_name')->label('First Name')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('last_name')->label('Last Name')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('Email Address')->searchable(),
-                Tables\Columns\TextColumn::make('organization')->label('Organization')->searchable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('phone')->label('Phone')->searchable(),
-                Tables\Columns\TextColumn::make('country')->label('Country')->sortable(),
-                Tables\Columns\TextColumn::make('city')->label('City')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('currency')->label('Currency')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('status')->boolean(),
-                Tables\Columns\TextColumn::make('opening_balance')->label('Opening Balance')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('invoice_no')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('customer.full_name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('date')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('invoice_date')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('e_form_no')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('country_of_origin')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('port_of_landing')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('port_of_discharge')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                RelationManagerAction::make('vendor-product-price-relation-manager')
-                    ->label('Product Prices')
-                    ->relationManager(RelationManagers\VariantPricesRelationManager::make()),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
@@ -308,21 +324,17 @@ class VendorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\VariantPricesRelationManager::class,
+            //
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListVendors::route('/'),
-            'create' => Pages\CreateVendor::route('/create'),
-            'edit' => Pages\EditVendor::route('/{record}/edit'),
-            'view' => Pages\ViewVendor::route('/{record}'),
+            'index' => Pages\ListPackagingLists::route('/'),
+            'create' => Pages\CreatePackagingList::route('/create'),
+            'view' => Pages\ViewPackagingList::route('/{record}'),
+            'edit' => Pages\EditPackagingList::route('/{record}/edit'),
         ];
     }
-
-
-    
-
 }
