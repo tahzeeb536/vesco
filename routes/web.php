@@ -46,5 +46,11 @@ Route::get('/letter-head/print-with-logo/{record}', [PrintDocsController::class,
 Route::get('/letter-head/print-without-logo/{record}', [PrintDocsController::class, 'print_letter_head_without_logo'])->name('print_letter_head_without_logo');
 Route::get('/letter-head/print-without-stamp/{record}', [PrintDocsController::class, 'print_letter_head_without_stamp'])->name('print_letter_head_without_stamp');
 
+
+Route::get('/packaging-list/print-with-logo/{record}', [PrintDocsController::class, 'print_packaging_list_with_logo'])->name('print_packaging_list_with_logo');
+Route::get('/packaging-list/print-with-stamp/{record}', [PrintDocsController::class, 'print_packaging_list_with_stamp'])->name('print_packaging_list_with_stamp');
+Route::get('/share-packaging-list/{record}', [PrintDocsController::class, 'share_packaging_list'])->name('share_packaging_list');
+
+
 Route::get('/export-out-of-stock', [ExportController::class, 'exportOutOfStock'])->name('export.out_of_stock');
 Route::get('/export-stock-detail', [ExportController::class, 'exportStockDetail'])->name('export.stock_detail');
