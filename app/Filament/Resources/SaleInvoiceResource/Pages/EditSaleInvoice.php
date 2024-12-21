@@ -21,7 +21,7 @@ class EditSaleInvoice extends EditRecord
 
     protected function afterSave(): void
     {
-        $purchaseOrder = $this->record;
+        $saleInvoice = $this->record;
 
         $items = null;
 
@@ -30,7 +30,7 @@ class EditSaleInvoice extends EditRecord
         }
 
         if ($items) {
-            $existingItems = $purchaseOrder->items->keyBy('id');
+            $existingItems = $saleInvoice->items->keyBy('id');
 
             foreach ($items as $item) {
                 if (isset($item['id']) && $existingItems->has($item['id'])) {
@@ -45,7 +45,7 @@ class EditSaleInvoice extends EditRecord
                     $existingItems->forget($item['id']);
                 } else {
                     SaleInvoiceItem::create([
-                        'purchase_order_id' => $purchaseOrder->id,
+                        'sale_invoice_id' => $saleInvoice->id,
                         'variant_id' => $item['variant_id'],
                         'quantity' => $item['quantity'],
                         'unit_price' => $item['unit_price'],

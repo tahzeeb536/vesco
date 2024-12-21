@@ -26,8 +26,40 @@ class SaleInvoiceResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\DatePicker::make('invoice_date')
+                    ->required()
+                    ->default(now()),
+
+                Forms\Components\TextInput::make('invoice_number')
+                    ->readOnly(),
+
+                Forms\Components\TextInput::make('ntn')
+                    ->default('2130732-6')
+                    ->label('NTN No'),
+
+                Forms\Components\TextInput::make('financial_instrument_no')
+                    ->label('Financial Instrument No'),
+
+                Forms\Components\TextInput::make('bank_name')
+                    ->label('Bank Name')
+                    ->required()
+                    ->default('HBL'),
+
+                Forms\Components\Select::make('shipping')
+                    ->options([
+                        'By Air' => 'By Air',
+                        'By Sea' => 'By Sea',
+                    ])
+                    ->default('By Air')
+                    ->required(),
+
+                Forms\Components\TextInput::make('port_of_loading')
+                    ->label('Port of Landing'),
+
+                Forms\Components\TextInput::make('port_of_discharge')
+                    ->label('Port of Discharge'),
+
                 Forms\Components\Select::make('customer_id')
-                    //->relationship('customer', 'full_name')
                     ->getSearchResultsUsing(function (string $query) {
                         return Customer::where('full_name', 'like', "%{$query}%")
                             ->limit(50)
@@ -40,14 +72,28 @@ class SaleInvoiceResource extends Resource
                     ->preload()
                     ->searchable()
                     ->required(),
+                
+                Forms\Components\TextInput::make('term')
+                    ->default('Advance'),
+                
+                Forms\Components\TextInput::make('hs_code')
+                    ->label('HS Code')
+                    ->default('9022-2100'),
+                
+                Forms\Components\TextInput::make('po_no')
+                    ->label('P.O. No'),
+                
+                Forms\Components\TextInput::make('frieght_charges')
+                    ->label('Frieght Charges')
+                    ->numeric(),
+                
+                Forms\Components\TextInput::make('tax_charges')
+                    ->label('Tax Charges')
+                    ->numeric(),
 
-                Forms\Components\DatePicker::make('invoice_date')
-                    ->required()
-                    ->default(now()),
-
-                Forms\Components\Textarea::make('note')
-                    ->label('Note')
-                    ->nullable(),
+                // Forms\Components\Textarea::make('note')
+                //     ->label('Note')
+                //     ->nullable(),
 
                 Forms\Components\Hidden::make('order_items')
                     ->required()
@@ -70,75 +116,6 @@ class SaleInvoiceResource extends Resource
                     ])
                     ->hiddenOn(['create', 'edit']),
 
-                // Forms\Components\Grid::make(1)->schema([
-                //     TableRepeater::make('items')
-                //         ->relationship('items')
-                //         ->schema([
-                //             Forms\Components\Select::make('variant_id')
-                //                 ->label('Product Variant')
-                //                 ->required()
-                //                 ->searchable()
-                //                 ->reactive()
-                //                 ->debounce(500)
-                //                 ->getSearchResultsUsing(function (string $query) {
-                //                     return ProductVariant::where('name', 'like', "%{$query}%")
-                //                         ->limit(50)
-                //                         ->pluck('name', 'id');
-                //                 })
-                //                 ->getOptionLabelUsing(function ($value) {
-                //                     return ProductVariant::find($value)?->name ?? '';
-                //                 })
-                //                 ->afterStateUpdated(function ($state, callable $set) {
-                //                     $variant = \App\Models\ProductVariant::find($state);
-                //                     if ($variant) {
-                //                         $set('unit_price', round($variant->vendor_price, 2));
-                //                     }
-                //                 }),
-                            
-                //             Forms\Components\Hidden::make('ordered_quantity')
-                //                 ->default(0),
-                            
-                //             Forms\Components\TextInput::make('quantity')
-                //                 ->label('Qty')
-                //                 ->numeric()
-                //                 ->required()
-                //                 ->default(0)
-                //                 ->reactive()
-                //                 ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                //                     $unitPrice = $get('unit_price') ?? 0;
-                //                     $set('total_price', $state * $unitPrice);
-                //                 }),
-
-                //             Forms\Components\TextInput::make('unit_price')
-                //                 ->label('Unit Price')
-                //                 ->numeric()
-                //                 ->reactive()
-                //                 ->default(0)
-                //                 ->required()
-                //                 ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                //                     $quantity = $get('quantity') ?? 1;
-                //                     $set('total_price', $state * $quantity);
-                //                 }),
-
-                //             Forms\Components\TextInput::make('total_price')
-                //                 ->label('Total Price')
-                //                 ->numeric()
-                //                 ->default(0)
-                //                 ->required()
-                //                 ->reactive()
-                //                 ->readOnly(),
-                //         ])
-                //         ->reorderable()
-                //         ->minItems(1)
-                //         ->colStyles(function(){
-                //             return [
-                //                 'variant_id' => 'width: 55%;',
-                //                 'quantity' => 'width: 15%',
-                //                 'unit_price' => 'width: 15%',
-                //                 'total_price' => 'width: 15%',
-                //             ];
-                //         }),
-                // ])
             ]);
     }
 

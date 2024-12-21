@@ -17,6 +17,8 @@ class CreateSaleInvoice extends CreateRecord
     {
         $saleInvoice = $this->record;
 
+        $saleInvoice->refresh();
+
         $items=null;
 
         if (isset($this->data['order_items'])) {

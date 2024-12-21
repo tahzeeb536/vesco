@@ -15,19 +15,36 @@ class SaleInvoice extends Model
         'customer_id',
         'invoice_number',
         'invoice_date',
+        'ntn',
+        'financial_instrument_no',
+        'bank_name',
+        'shipping',
+        'port_of_loading',
+        'port_of_discharge',
+        'term',
+        'hs_code',
+        'po_no',
+        'frieght_charges',
+        'tax_charges',
         'total_amount',
+        'paid_amount',
+        'pending_amount',
         'note',
+        'status',
     ];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($sale) {
-            if (is_null($sale->invoice_number)) {
-                $lastInvoice = self::latest('id')->first();
-                $sale->invoice_number = $lastInvoice ?  'SI-' . $lastInvoice->id + 1 : 'SI-' . 1;
+        static::created(function ($sale) {
+            $sale->invoice_number = 'VES-' . $sale->id;
+            $sale->save();
+        });
 
+        static::updating(function ($sale) {
+            if (is_null($sale->invoice_number)) {
+                $sale->invoice_number = 'VES-' . $sale->id;
             }
         });
 

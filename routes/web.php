@@ -31,7 +31,7 @@ Route::middleware('api')->get('/api/product-variants', function (Request $reques
     }])
     ->where('name', 'like', "%$search%")
     ->limit(25)
-    ->get(['id', 'name', 'vendor_price']);
+    ->get(['id', 'name', 'vendor_price', 'customer_price']);
 });
 
 Route::get('/stock-search-report', [ReportsController::class, 'generateReport'])->name('stock.report');
