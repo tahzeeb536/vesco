@@ -16,6 +16,7 @@ use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use App\Models\ProductVariant;
 use App\Models\Customer;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Actions;
 
 class SaleInvoiceResource extends Resource
 {
@@ -145,6 +146,14 @@ class SaleInvoiceResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
+                    Actions\Action::make('print_sale_invoice')
+                        ->label('Print Invoice')
+                        ->url(fn ($record) => self::print_sale_invoice($record->id))
+                        ->openUrlInNewTab(),
+                    Actions\Action::make('print_sale_invoice_with_stamp')
+                        ->label('Invoice with Stamp')
+                        ->url(fn ($record) => self::print_sale_invoice_with_stamp($record->id))
+                        ->openUrlInNewTab(),
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                 ])
@@ -172,4 +181,14 @@ class SaleInvoiceResource extends Resource
             'view' => Pages\ViewSaleInvoice::route('/{record}/view'),
         ];
     }
+
+    protected static function print_sale_invoice($recordId)
+{
+    return route('print_sale_invoice', ['record' => $recordId]);
+}
+
+protected static function print_sale_invoice_with_stamp($recordId)
+{
+    return route('print_sale_invoice_with_stamp', ['record' => $recordId]);
+}
 }
