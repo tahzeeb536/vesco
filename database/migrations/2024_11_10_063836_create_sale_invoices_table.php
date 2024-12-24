@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('term')->nullable();
             $table->string('hs_code')->nullable();
             $table->string('po_no')->nullable();
-            $table->decimal('frieght_charges', 10, 2)->nullable();
+            $table->decimal('freight_charges', 10, 2)->nullable();
             $table->decimal('tax_charges', 10, 2)->nullable();
             $table->decimal('total_amount', 10, 2)->nullable();
             $table->decimal('paid_amount', 10, 2)->nullable();

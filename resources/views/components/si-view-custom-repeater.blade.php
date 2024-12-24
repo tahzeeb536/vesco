@@ -8,10 +8,11 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
             variant_id: item.variant_id || '',
             variant_name: item.variant?.name || '',
             quantity: item.quantity || 1,
+            discount: item.discount || 0,
             unit_price: item.unit_price || 0,
             total_price: item.total_price || 0,
         }))
-        : [{ id: Date.now(), variant_id: '', variant_name: '', quantity: 1, unit_price: 0, total_price: 0 }],
+        : [{ id: Date.now(), variant_id: '', variant_name: '', quantity: 1, discount: 0, unit_price: 0, total_price: 0 }],
     
     orderItems: @entangle('data.order_items'),
 
@@ -37,6 +38,9 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                     </th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">
                         Unit Price
+                    </th>
+                    <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">
+                        Discount %
                     </th>
                     <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">
                         Total Price
@@ -129,6 +133,17 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                    class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
                                    style="outline: none; box-shadow: none;"
                                    x-model.number="row.unit_price"
+                                   min="0"
+                                   @input="calculateTotal(row)" />
+                        </td>
+
+                        <!-- Unit Price -->
+                        <td class="p-0 border border-gray-300" style="width: 12%;">
+                            <input type="number"
+                                   disabled
+                                   class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
+                                   style="outline: none; box-shadow: none;"
+                                   x-model.number="row.discount"
                                    min="0"
                                    @input="calculateTotal(row)" />
                         </td>

@@ -14,6 +14,16 @@ class ViewSaleInvoice extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            Actions\Action::make('print_sale_invoice')
+                ->label('Print Invoice')
+                ->color('success')
+                ->url(fn () => $this->print_sale_invoice())
+                ->openUrlInNewTab(),
+            Actions\Action::make('print_sale_invoice_with_stamp')
+                ->label('Invoice with Stamp')
+                ->color('success')
+                ->url(fn () => $this->print_sale_invoice_with_stamp())
+                ->openUrlInNewTab(),
         ];
     }
 
@@ -22,5 +32,15 @@ class ViewSaleInvoice extends ViewRecord
         $data['is_view'] = true;
     
         return $data;
+    }
+
+    protected function print_sale_invoice()
+    {
+        return route('print_sale_invoice', ['record' => $this->record->id]);
+    }
+
+    protected function print_sale_invoice_with_stamp()
+    {
+        return route('print_sale_invoice_with_stamp', ['record' => $this->record->id]);
     }
 }

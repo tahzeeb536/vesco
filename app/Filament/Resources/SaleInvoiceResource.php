@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Icetalker\FilamentTableRepeater\Forms\Components\TableRepeater;
 use App\Models\ProductVariant;
 use App\Models\Customer;
+use Filament\Tables\Actions\ActionGroup;
 
 class SaleInvoiceResource extends Resource
 {
@@ -83,8 +84,8 @@ class SaleInvoiceResource extends Resource
                 Forms\Components\TextInput::make('po_no')
                     ->label('P.O. No'),
                 
-                Forms\Components\TextInput::make('frieght_charges')
-                    ->label('Frieght Charges')
+                Forms\Components\TextInput::make('freight_charges')
+                    ->label('Freight Charges')
                     ->numeric(),
                 
                 Forms\Components\TextInput::make('tax_charges')
@@ -143,8 +144,10 @@ class SaleInvoiceResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

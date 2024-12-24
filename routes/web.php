@@ -51,6 +51,8 @@ Route::get('/packaging-list/print-with-logo/{record}', [PrintDocsController::cla
 Route::get('/packaging-list/print-with-stamp/{record}', [PrintDocsController::class, 'print_packaging_list_with_stamp'])->name('print_packaging_list_with_stamp');
 Route::get('/share-packaging-list/{record}', [PrintDocsController::class, 'share_packaging_list'])->name('share_packaging_list');
 
+Route::get('/sale-invoice/print-invoice/{record}', [PrintDocsController::class, 'print_sale_invoice'])->name('print_sale_invoice');
+Route::get('/sale-invoice/print-invoice-with-stamp/{record}', [PrintDocsController::class, 'print_sale_invoice_with_stamp'])->name('print_sale_invoice_with_stamp');
 
 Route::get('/export-out-of-stock', [ExportController::class, 'exportOutOfStock'])->name('export.out_of_stock');
 Route::get('/export-stock-detail', [ExportController::class, 'exportStockDetail'])->name('export.stock_detail');

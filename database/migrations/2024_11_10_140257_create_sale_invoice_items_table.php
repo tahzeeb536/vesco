@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('sale_invoice_id')->constrained('sale_invoices')->onDelete('cascade');
             $table->foreignId('variant_id')->constrained('product_variants')->onDelete('cascade');
             $table->integer('quantity');
+            $table->integer('discount')->default(0);
             $table->decimal('unit_price', 10, 2);
             $table->decimal('total_price', 10, 2);
             $table->timestamps();

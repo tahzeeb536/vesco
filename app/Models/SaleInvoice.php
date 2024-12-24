@@ -24,7 +24,7 @@ class SaleInvoice extends Model
         'term',
         'hs_code',
         'po_no',
-        'frieght_charges',
+        'frieignt_charges',
         'tax_charges',
         'total_amount',
         'paid_amount',

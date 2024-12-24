@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
 use App\Models\PackagingList;
 use App\Models\LetterHead;
+use App\Models\SaleInvoice;
 use Illuminate\Support\Facades\Crypt;
 
 class PrintDocsController extends Controller
@@ -49,5 +50,15 @@ class PrintDocsController extends Controller
         $decodedId = Crypt::decrypt($record);
         $packagingList = PackagingList::findOrFail($decodedId);
         return view('pdf.share_packaging_list', compact('packagingList'));
+    }
+
+    public function print_sale_invoice($record) {
+        $saleInvoice = SaleInvoice::findOrFail($record);
+        return view('pdf.print_sale_invoice', compact('saleInvoice'));
+    }
+
+    public function print_sale_invoice_with_stamp($record) {
+        $saleInvoice = SaleInvoice::findOrFail($record);
+        return view('pdf.print_sale_invoice_with_stamp', compact('saleInvoice'));
     }
 }
