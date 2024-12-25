@@ -16,11 +16,12 @@ use Filament\Notifications\Notification;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Illuminate\Contracts\Support\Htmlable;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Forms\Concerns\InteractsWithForms;
 
 class AttendanceManagement extends Page implements HasTable
 {
-    use InteractsWithTable;
-    use Forms\Concerns\InteractsWithForms;
+    use InteractsWithTable, InteractsWithForms, HasPageShield;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static ?string $navigationLabel = 'Daily Attendance';
@@ -34,7 +35,8 @@ class AttendanceManagement extends Page implements HasTable
 
     public function getTitle(): string | Htmlable
     {
-        return __('Daily Attendance (' . Carbon::parse($this->selectedDate)->format('j F, Y') . ')' );
+        // return __('Daily Attendance (' . Carbon::parse($this->selectedDate)->format('j F, Y') . ')' );
+        return __('Daily Attendance');
     }
 
     public function mount() {

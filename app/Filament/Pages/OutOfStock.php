@@ -10,10 +10,12 @@ use App\Models\StockEntry;
 use App\Models\Product;
 use App\Models\Shelf;
 use Filament\Pages\Actions\Action;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Tables\Concerns\InteractsWithTable;
 
 class OutOfStock extends Page implements Tables\Contracts\HasTable
 {
-    use Tables\Concerns\InteractsWithTable;
+    use InteractsWithTable, HasPageShield;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-minus';
     protected static string $view = 'filament.pages.out-of-stock';
