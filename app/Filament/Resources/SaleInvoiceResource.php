@@ -17,6 +17,7 @@ use App\Models\ProductVariant;
 use App\Models\Customer;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Actions;
+use Filament\Tables\Actions\Action as PopupAction;
 
 class SaleInvoiceResource extends Resource
 {
@@ -125,21 +126,56 @@ class SaleInvoiceResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('invoice_number')
+                    ->label('Invoice Number')
+                    ->sortable()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('invoice_date')
+                    ->label('Invoice Date')
+                    ->searchable()
+                    ->sortable()
+                    ->date(),
+
                 Tables\Columns\TextColumn::make('customer.full_name')
                     ->label('Customer')
                     ->searchable(),
-
-                Tables\Columns\TextColumn::make('invoice_number')
-                    ->label('Invoice Number')
-                    ->searchable(),
-                    
-                Tables\Columns\TextColumn::make('invoice_date')
-                    ->label('Invoice Date')
-                    ->date(),
                     
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label('Total Amount')
+                    ->getStateUsing(function ($record) {
+                        $currency = $record->customer->currency ?? 'USD';
+                        return number_format($record->total_amount, 2) . ' ' . strtoupper($currency);
+                    })
                     ->sortable(),
+                
+                Tables\Columns\TextColumn::make('paid_amount')
+                    ->label('Paid Amount')
+                    ->getStateUsing(function ($record) {
+                        $currency = $record->customer->currency ?? 'USD';
+                        return number_format($record->total_amount, 2) . ' ' . strtoupper($currency);
+                    })
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('pending_amount')
+                    ->label('Pending Amount')
+                    ->getStateUsing(function ($record) {
+                        $currency = $record->customer->currency ?? 'USD';
+                        return number_format($record->total_amount, 2) . ' ' . strtoupper($currency);
+                    })
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable()
+                    ->formatStateUsing(function ($state) {
+                        return ucwords(str_replace('_', ' ', $state));
+                    })
+                    ->badge()
+                    ->colors([
+                        'success' => 'paid',         
+                        'danger' => 'not_paid',      
+                        'warning' => 'partially_paid',
+                    ]),
             ])
             ->filters([
                 //
@@ -154,6 +190,46 @@ class SaleInvoiceResource extends Resource
                         ->label('Invoice with Stamp')
                         ->url(fn ($record) => self::print_sale_invoice_with_stamp($record->id))
                         ->openUrlInNewTab(),
+                    PopupAction::make('pay_invoice')
+                        ->label('Pay Invoice')
+                        ->requiresConfirmation()
+                        ->icon('heroicon-o-banknotes')
+                        ->action(function (SaleInvoice $record, array $data) {
+                            $paidAmount = $data['paid_amount'];
+                            $totalAmount = $record->total_amount;
+
+                            if ($paidAmount == $totalAmount) {
+                                $status = 'paid';
+                            } elseif ($paidAmount > 0 && $paidAmount < $totalAmount) {
+                                $status = 'partially_paid';
+                            } else {
+                                $status = 'pending';
+                            }
+
+                            $record->update([
+                                'paid_amount' => $data['paid_amount'],
+                                'pending_amount' => $record->total_amount - $data['paid_amount'],
+                                'status' => $status, 
+                            ]);
+                        })
+                        ->modalHeading('Pay Invoice')
+                        ->form([
+                            Forms\Components\TextInput::make('total_amount')
+                                ->label('Total Amount')
+                                ->numeric()
+                                ->readonly(),
+                            Forms\Components\TextInput::make('paid_amount')
+                                ->label('Paid Amount')
+                                ->required()
+                                ->numeric()
+                        ])
+                        ->mountUsing(function (Forms\ComponentContainer $form, SaleInvoice $record) {
+                            $form->fill([
+                                'total_amount'   => $record->total_amount,
+                                'paid_amount'    => $record->paid_amount,
+                                'pending_amount' => $record->total_amount - $record->paid_amount,
+                            ]);
+                        }),
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                 ])
@@ -183,12 +259,12 @@ class SaleInvoiceResource extends Resource
     }
 
     protected static function print_sale_invoice($recordId)
-{
-    return route('print_sale_invoice', ['record' => $recordId]);
-}
+    {
+        return route('print_sale_invoice', ['record' => $recordId]);
+    }
 
-protected static function print_sale_invoice_with_stamp($recordId)
-{
-    return route('print_sale_invoice_with_stamp', ['record' => $recordId]);
-}
+    protected static function print_sale_invoice_with_stamp($recordId)
+    {
+        return route('print_sale_invoice_with_stamp', ['record' => $recordId]);
+    }
 }
