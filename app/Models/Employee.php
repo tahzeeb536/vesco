@@ -40,5 +40,13 @@ class Employee extends Model
         return $this->hasOne(Attendance::class, 'employee_id', 'id')
         ->where('date', $date);
     }
+
+    public function advance_salaries(): HasMany  {
+        return $this->hasMany(AdvanceSalary::class, 'employee_id', 'id');
+    }
  
+    public function advance_salary_balance(): HasOne
+    {
+        return $this->hasOne(AdvanceSalaryBalance::class, 'employee_id', 'id');
+    }
 }
