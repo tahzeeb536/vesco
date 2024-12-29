@@ -41,7 +41,7 @@ class CustomerResource extends Resource
                     Forms\Components\TextInput::make('address')
                         ->required()
                         ->label('Address'),
-                        Forms\Components\Select::make('country')
+                    Forms\Components\Select::make('country')
                         ->options([
                             'Afghanistan' => 'Afghanistan',
                             'Albania' => 'Albania',

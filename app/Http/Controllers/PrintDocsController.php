@@ -7,6 +7,9 @@ use App\Models\PurchaseOrder;
 use App\Models\PackagingList;
 use App\Models\LetterHead;
 use App\Models\SaleInvoice;
+use App\Models\Salary;
+use App\Models\Attendance;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Crypt;
 
 class PrintDocsController extends Controller
@@ -61,4 +64,49 @@ class PrintDocsController extends Controller
         $saleInvoice = SaleInvoice::findOrFail($record);
         return view('pdf.print_sale_invoice_with_stamp', compact('saleInvoice'));
     }
+
+    public function print_salary($employee_id, $month, $year)
+    {
+        // Fetch employee details
+        $employee = Employee::findOrFail($employee_id);
+
+        // Fetch salary details
+        $salaries = Salary::where('employee_id', $employee_id)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->first();
+
+        // Fetch attendance details
+        $attendances = Attendance::where('employee_id', $employee_id)
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->get();
+
+        // Map attendance data (including overtime_hours)
+        $attendanceStatus = $attendances->map(function ($attendance) {
+            // Ensure $attendance->date is a Carbon instance
+            $attendanceDate = $attendance->date instanceof \Carbon\Carbon
+                ? $attendance->date
+                : \Carbon\Carbon::parse($attendance->date);
+
+            return [
+                'date' => $attendanceDate->format('Y-m-d'),
+                'status' => $attendance->status,
+                // Include this line if your 'attendance' table has an 'overtime_hours' column
+                'overtime_hours' => $attendance->overtime_hours ?? 0,
+            ];
+        });
+
+        // Prepare data for the view
+        $data = [
+            'employee'           => $employee,
+            'salaries'           => $salaries,
+            'attendance_status'  => $attendanceStatus,
+        ];
+
+        // Return the view
+        return view('pdf.salary-sheet', $data);
+    }
+
+
 }

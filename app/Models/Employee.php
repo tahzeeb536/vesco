@@ -49,4 +49,8 @@ class Employee extends Model
     {
         return $this->hasOne(AdvanceSalaryBalance::class, 'employee_id', 'id');
     }
+
+    public function salaries(): HasMany  {
+        return $this->hasMany(Salary::class, 'employee_id', 'id');
+    }
 }

@@ -77,15 +77,6 @@ class AttendanceManagement extends Page implements HasTable
                     ->label('Name Urdu')
                     ->sortable()
                     ->searchable(),
-                // Tables\Columns\TextColumn::make('attendance.0.date')
-                //     ->label('Date')
-                //     ->default('-')
-                //     ->formatStateUsing(function($state) {
-                //         if ($state && strtotime($state)) {
-                //             return Carbon::parse($state)->format('j M, Y');
-                //         }
-                //         return '-';
-                //     }),
                 Tables\Columns\TextColumn::make('attendance.0.clock_in')
                     ->label('Time In')
                     ->sortable()
