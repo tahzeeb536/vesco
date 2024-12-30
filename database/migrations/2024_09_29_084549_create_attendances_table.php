@@ -18,8 +18,10 @@ return new class extends Migration
             $table->enum('status', ['Present', 'Leave', 'Absent'])->nullable();
             $table->time('clock_in')->nullable();
             $table->time('clock_out')->nullable();
-            $table->decimal('hours_worked', 5, 2)->nullable();
-            $table->decimal('overtime_hours', 5, 2)->nullable();
+            $table->unsignedInteger('hours_worked')->nullable()->default(0);
+            $table->unsignedInteger('minutes_worked')->nullable()->default(0);
+            $table->unsignedInteger('overtime_hours')->nullable()->default(0);
+            $table->unsignedInteger('overtime_minutes')->nullable()->default(0);
             $table->timestamps();
         });
     }
