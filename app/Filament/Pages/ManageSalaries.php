@@ -132,25 +132,39 @@ class ManageSalaries extends Page implements HasTable
         $today = Carbon::today();
 
         foreach ($employees as $employee) {
-            // Fetch attendance for the employee
+            // Fetch all attendance for the employee in the given month and year
             $attendances = Attendance::where('employee_id', $employee->id)
                 ->whereMonth('date', $this->month)
                 ->whereYear('date', $this->year)
                 ->get();
 
-            // Mark past and current Fridays as present
+            // Get the total days in the month
             $datesInMonth = Carbon::create($this->year, $this->month)->daysInMonth;
+
             for ($day = 1; $day <= $datesInMonth; $day++) {
                 $date = Carbon::create($this->year, $this->month, $day);
-                if ($date->isFriday() && $date <= $today) {
-                    Attendance::updateOrCreate(
-                        ['employee_id' => $employee->id, 'date' => $date],
-                        ['status' => 'Present', 'hours_worked' => 8.0, 'overtime_hours' => 0.0]
-                    );
+
+                // Check if there is an existing attendance entry for the date
+                $attendance = $attendances->firstWhere('date', $date->format('Y-m-d'));
+
+                if (!$attendance || is_null($attendance->status)) {
+                    // Mark Fridays as Present if no entry or status is null
+                    if ($date->isFriday() && $date <= $today) {
+                        Attendance::updateOrCreate(
+                            ['employee_id' => $employee->id, 'date' => $date],
+                            ['status' => 'Present', 'hours_worked' => 8.0, 'overtime_hours' => 0.0]
+                        );
+                    } else {
+                        // Mark other days as Absent if no entry or status is null
+                        Attendance::updateOrCreate(
+                            ['employee_id' => $employee->id, 'date' => $date],
+                            ['status' => 'Absent', 'hours_worked' => 0.0, 'overtime_hours' => 0.0]
+                        );
+                    }
                 }
             }
 
-            // Recalculate attendance after updating Fridays
+            // Re-fetch updated attendance after updating Fridays and marking absents
             $attendances = Attendance::where('employee_id', $employee->id)
                 ->whereMonth('date', $this->month)
                 ->whereYear('date', $this->year)

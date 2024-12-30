@@ -56,14 +56,14 @@
         <tr>
             <th>Employee Name</th>
             <td>{{ $employee->name }}</td>
-            <th>Designation</th>
-            <td>{{ $employee->designation }}</td>
+            <th>Father's Name</th>
+            <td>{{ $employee->father_name }}</td>
         </tr>
         <tr>
-            <th>Basic Salary</th>
-            <td>{{ number_format($employee->basic_salary, 2) }}</td>
-            <th>Department</th>
-            <td>{{ $employee->department }}</td>
+            <th>CNIC</th>
+            <td>{{ $employee->cnic }}</td>
+            <th>Phone No.</th>
+            <td>{{ $employee->phone }}</td>
         </tr>
     </table>
 
@@ -71,31 +71,59 @@
     <table class="attendance-table">
         <thead>
             <tr>
-                <th colspan="11">Attendance</th>
+                <th>Day</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
             </tr>
         </thead>
         <tbody>
             @php
                 $daysInMonth = \Carbon\Carbon::create($salaries->year, $salaries->month)->daysInMonth;
-                $chunks = collect(range(1, $daysInMonth))->chunk(10); // Break into chunks of 10
+                $firstDay = \Carbon\Carbon::create($salaries->year, $salaries->month, 1);
+                $weeks = [];
+                $currentWeek = [];
+
+                for ($day = 1; $day <= $daysInMonth; $day++) {
+                    $date = \Carbon\Carbon::create($salaries->year, $salaries->month, $day);
+                    $currentWeek[$date->dayOfWeek] = [
+                        'day' => $day,
+                        'date' => $date->format('Y-m-d')
+                    ];
+
+                    if ($date->dayOfWeek == 5 || $day == $daysInMonth) {
+                        $weeks[] = $currentWeek;
+                        $currentWeek = [];
+                    }
+                }
             @endphp
 
-            @foreach ($chunks as $chunk)
+            @foreach ($weeks as $week)
+                <!-- Day Numbers Row -->
                 <tr>
                     <th>Day</th>
-                    @foreach ($chunk as $day)
-                        <td>{{ $day }}</td>
-                    @endforeach
+                    @for ($day = 6; $day <= 12; $day++)
+                        <td>
+                            {{ isset($week[$day % 7]) ? $week[$day % 7]['day'] : '-' }}
+                        </td>
+                    @endfor
                 </tr>
+                <!-- Status Row -->
                 <tr>
                     <th>Status</th>
-                    @foreach ($chunk as $day)
+                    @for ($day = 6; $day <= 12; $day++)
                         @php
-                            $date = \Carbon\Carbon::create($salaries->year, $salaries->month, $day)->format('Y-m-d');
-                            $status = $attendance_status->firstWhere('date', $date)['status'] ?? 'A';
+                            $status = isset($week[$day % 7]) ? 
+                                ($attendance_status->firstWhere('date', $week[$day % 7]['date'])['status'] ?? 'A') : null;
                         @endphp
-                        <td>{{ $status == 'Present' ? 'P' : ($status == 'Leave' ? 'L' : 'A') }}</td>
-                    @endforeach
+                        <td>
+                            {{ $status ? ($status == 'Present' ? 'P' : ($status == 'Leave' ? 'L' : 'A')) : '-' }}
+                        </td>
+                    @endfor
                 </tr>
             @endforeach
         </tbody>
