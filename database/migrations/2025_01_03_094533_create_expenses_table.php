@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('amount', 10, 2);
             $table->string('expense_by');
-            $table->string('image')->nullable(); /
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

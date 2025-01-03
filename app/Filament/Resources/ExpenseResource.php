@@ -31,7 +31,8 @@ class ExpenseResource extends Resource
                     ->label('Category')
                     ->relationship('category', 'name')
                     ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->preload(),
                 Forms\Components\TextInput::make('description')
                     ->label('Description')
                     ->nullable()
