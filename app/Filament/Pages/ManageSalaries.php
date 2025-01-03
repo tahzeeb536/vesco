@@ -5,8 +5,8 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use App\Models\Employee;
 use App\Models\Salary;
-use App\Models\AdvanceSalaryBalance;
 use App\Models\Attendance;
+use App\Models\AdvanceSalaryBalance;
 use Illuminate\Support\Facades\DB;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -18,7 +18,6 @@ use Filament\Notifications\Notification;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms;
-use Illuminate\Support\Facades\Validator;
 
 class ManageSalaries extends Page implements HasTable
 {
@@ -55,7 +54,7 @@ class ManageSalaries extends Page implements HasTable
                             '12' => 'December',
                         ])
                         ->label('Month')
-                        ->default(now()->format('m')) // Default to current month
+                        ->default(now()->format('m'))
                         ->required(),
                     Forms\Components\Select::make('year')
                         ->options(function () {
@@ -67,7 +66,7 @@ class ManageSalaries extends Page implements HasTable
                             return $years;
                         })
                         ->label('Year')
-                        ->default(now()->year) // Default to current year
+                        ->default(now()->year)
                         ->required(),
                 ])
                 ->action(function (array $data) {
@@ -82,135 +81,175 @@ class ManageSalaries extends Page implements HasTable
         ];
     }
 
-    public function table(Table $table): Table {
+    public function table(Table $table): Table
+    {
         $selectedMonth = $this->month ?? now()->format('m');
         $selectedYear = $this->year ?? now()->year;
-    
+
         return $table->query(
             Employee::query()->with(['salaries' => function ($query) use ($selectedMonth, $selectedYear) {
                 $query->where('month', $selectedMonth);
                 $query->where('year', $selectedYear);
             }])
         )
-        ->columns([
-            Tables\Columns\TextColumn::make('name')
-                ->label('Name')
-                ->sortable()
-                ->searchable(),
-            Tables\Columns\TextColumn::make('salaries.total_present_days')
-                ->label('Total Days'),
-            Tables\Columns\TextColumn::make('salaries.total_overtime_hours')
-                ->label('Total Overtime'),
-            Tables\Columns\TextColumn::make('salaries.absent_days_salary_deduction')
-                ->label('Absence Deduction'),
-            Tables\Columns\TextColumn::make('salaries.deduction')
-                ->label('Advance Deduction'),
-            Tables\Columns\TextColumn::make('salaries.net_salary')
-                ->label('Net Salary'),
-        ])
-        ->actions([
-            Tables\Actions\Action::make('view_salary_sheet')
-                ->label('Print')
-                ->icon('heroicon-o-printer')
-                ->color('primary')
-                ->url(fn (Employee $record) => route('print_salary', [
-                    'id' => $record->id,
-                    'month' => $selectedMonth,
-                    'year' => $selectedYear,
-                ]))
-                ->openUrlInNewTab()
-                ->tooltip('View and Print Salary Sheet'),
-        ])
-        ->filters([])
-        ->bulkActions([]);
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('salaries.total_present_days')
+                    ->label('Total Present Days')
+                    ->default('-'),
+                Tables\Columns\TextColumn::make('salaries.total_hours')
+                    ->label('Hours'),
+                Tables\Columns\TextColumn::make('salaries.total_minutes')
+                    ->label('Minutes')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('salaries.total_overtime_hours')
+                    ->label('Overtime Hours'),
+                Tables\Columns\TextColumn::make('salaries.total_overtime_minutes')
+                    ->label('Overtime Minutes')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('salaries.deduction')
+                    ->label('Deductions')
+                    ->default('-'),
+                Tables\Columns\TextColumn::make('salaries.net_salary')
+                    ->label('Net Salary')
+                    ->default('-'),
+            ])
+            ->actions([
+                Tables\Actions\Action::make('view_salary_sheet')
+                    ->label('Print')
+                    ->icon('heroicon-o-printer')
+                    ->color('primary')
+                    ->url(fn (Employee $record) => route('print_salary', [
+                        'id' => $record->id,
+                        'month' => $selectedMonth,
+                        'year' => $selectedYear,
+                    ]))
+                    ->openUrlInNewTab()
+                    ->tooltip('View and Print Salary Sheet'),
+            ])
+            ->description("Salaries for: " . Carbon::createFromDate($this->year, $this->month, 1)->format('F Y'))
+            ->filters([])
+            ->bulkActions([]);
     }
-    
-    
+
     public function calculateSalaries()
     {
         $employees = Employee::where('status', true)->get();
-        $today = Carbon::today();
+        $currentMonthDays = Carbon::create($this->year, $this->month)->daysInMonth;
+        $expectedWorkHours = $currentMonthDays * 8;
+        $overtimeDuration = 8 / 6;
+
 
         foreach ($employees as $employee) {
-            // Fetch all attendance for the employee in the given month and year
+            // Fetch attendance for the selected month and year
             $attendances = Attendance::where('employee_id', $employee->id)
                 ->whereMonth('date', $this->month)
                 ->whereYear('date', $this->year)
                 ->get();
 
-            // Get the total days in the month
-            $datesInMonth = Carbon::create($this->year, $this->month)->daysInMonth;
+            $presentDays = 0;
+            $totalWorkedHours = 0;
+            $totalWorkedMinutes = 0;
+            $totalOvertimeHours = 0;
+            $totalOvertimeMinutes = 0;
+            $absentDays = 0;
 
-            for ($day = 1; $day <= $datesInMonth; $day++) {
-                $date = Carbon::create($this->year, $this->month, $day);
+            foreach ($attendances as $attendance) {
+                if ($attendance->status === 'Present') {
+                    $hoursWorked = $attendance->hours_worked ?? 0;
+                    $minutesWorked = $attendance->minutes_worked ?? 0;
+                    $overtimeHours = $attendance->overtime_hours ?? 0;
+                    $overtimeMinutes = $attendance->overtime_minutes ?? 0;
 
-                // Check if there is an existing attendance entry for the date
-                $attendance = $attendances->firstWhere('date', $date->format('Y-m-d'));
+                    // Add present day if hours worked is greater than 0
+                    if ($hoursWorked > 0 || $minutesWorked > 0) {
+                        $presentDays++;
 
-                if (!$attendance || is_null($attendance->status)) {
-                    // Mark Fridays as Present if no entry or status is null
-                    if ($date->isFriday() && $date <= $today) {
-                        Attendance::updateOrCreate(
-                            ['employee_id' => $employee->id, 'date' => $date],
-                            ['status' => 'Present', 'hours_worked' => 8.0, 'overtime_hours' => 0.0]
-                        );
-                    } else {
-                        // Mark other days as Absent if no entry or status is null
-                        Attendance::updateOrCreate(
-                            ['employee_id' => $employee->id, 'date' => $date],
-                            ['status' => 'Absent', 'hours_worked' => 0.0, 'overtime_hours' => 0.0]
-                        );
+                        // Add hours and minutes worked
+                        $totalWorkedHours += $hoursWorked;
+                        $totalWorkedMinutes += $minutesWorked;
+
+                        // Normalize minutes into hours
+                        if ($totalWorkedMinutes >= 60) {
+                            $totalWorkedHours += floor($totalWorkedMinutes / 60);
+                            $totalWorkedMinutes %= 60;
+                        }
+
+                        // Add overtime hours and minutes
+                        $totalOvertimeHours += $overtimeHours;
+                        $totalOvertimeMinutes += $overtimeMinutes;
+
+                        // Normalize overtime minutes into hours
+                        if ($totalOvertimeMinutes >= 60) {
+                            $totalOvertimeHours += floor($totalOvertimeMinutes / 60);
+                            $totalOvertimeMinutes %= 60;
+                        }
                     }
+                } else {
+                    $absentDays++;
                 }
+
+
             }
 
-            // Re-fetch updated attendance after updating Fridays and marking absents
-            $attendances = Attendance::where('employee_id', $employee->id)
-                ->whereMonth('date', $this->month)
-                ->whereYear('date', $this->year)
-                ->get();
+            $hourlyRate = $employee->basic_salary / $expectedWorkHours;
 
-            // Calculate total minutes worked and overtime minutes
-            $totalPresentDays = $attendances->where('status', 'Present')->count();
-            $totalMinutesWorked = $attendances->sum(function ($attendance) {
-                [$hours, $minutes] = explode(':', gmdate('H:i', $attendance->hours_worked * 3600));
-                return $hours * 60 + $minutes;
-            });
+            $netSalary = $totalWorkedHours * $hourlyRate;
+            $netSalary += ($totalWorkedMinutes / 60) * $hourlyRate;
 
-            $totalOvertimeMinutes = $attendances->sum(function ($attendance) {
-                [$hours, $minutes] = explode(':', gmdate('H:i', $attendance->overtime_hours * 3600));
-                return $hours * 60 + $minutes;
-            });
+            $overtimeHourlyRate = $hourlyRate * $overtimeDuration;
 
-            $totalAbsentDays = $attendances->where('status', 'Absent')->count();
+            $netSalary += $totalOvertimeHours * $overtimeHourlyRate;
+            $netSalary += ($totalOvertimeMinutes / 60) * $overtimeHourlyRate;
 
-            // Salary calculations
-            $dailySalary = $employee->basic_salary / 30; // Assuming 30 days in a month
-            $minuteSalary = $dailySalary / 480; // Daily salary divided by total minutes in a day
+            $existingDeductionLog = DB::table('advance_salary_deductions')
+                ->where('employee_id', $employee->id)
+                ->whereMonth('return_date', $this->month)
+                ->whereYear('return_date', $this->year)
+                ->exists();
+            
+            $existingSalary = Salary::where('employee_id', $employee->id)
+                ->where('month', $this->month)
+                ->where('year', $this->year)
+                ->first();
 
-            $absentDaysDeduction = $dailySalary * $totalAbsentDays;
-            $earnedSalaryFromMinutes = $minuteSalary * $totalMinutesWorked;
+             // Calculate deductions
+             $deductionAmount = 0;
 
-            // Calculate overtime bonus
-            $overtimeBonus = ($totalOvertimeMinutes / 360) * $dailySalary; // 360 minutes = 6 hours equivalent to a full day
+            if (!$existingDeductionLog) {
+                // Fetch advance salary balance for the employee
+                $advanceBalance = AdvanceSalaryBalance::where('employee_id', $employee->id)->first();
 
-            // Net salary calculation
-            $netSalary = $earnedSalaryFromMinutes + $overtimeBonus - $absentDaysDeduction;
+                if ($advanceBalance && $advanceBalance->remaining_amount > 0) {
+                    // Deduct monthly deduction or remaining amount
+                    $deductionAmount = min($advanceBalance->monthly_deduction, $advanceBalance->remaining_amount);
 
-            // Deduct advance salary installment if applicable
-            $advanceBalance = AdvanceSalaryBalance::where('employee_id', $employee->id)->first();
-            if ($advanceBalance && $advanceBalance->remaining_amount > 0) {
-                $monthlyDeduction = $advanceBalance->monthly_deduction;
-                $deduction = min($netSalary, $monthlyDeduction);
-                $netSalary -= $deduction;
+                    DB::table('advance_salary_deductions')->insert([
+                        'employee_id' => $employee->id,
+                        'amount' => $deductionAmount,
+                        'return_date' => Carbon::create($this->year, $this->month, 1)->endOfMonth(),
+                        'remarks' => 'Monthly advance salary deduction',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
 
-                // Update advance balance
-                $advanceBalance->remaining_amount -= $deduction;
-                $advanceBalance->paid_amount += $deduction;
-                $advanceBalance->save();
+                    // Update advance salary balance
+                    $advanceBalance->paid_amount += $deductionAmount;
+                    $advanceBalance->remaining_amount -= $deductionAmount;
+                    $advanceBalance->save();
+                }
+            } 
+            else {
+                $deductionAmount = $existingSalary->deduction;
             }
 
-            // Store salary in the table
+            // Calculate net salary
+            $netSalary = $netSalary - $deductionAmount;
+            
+            // Save or update salary record for the employee
             Salary::updateOrCreate(
                 [
                     'employee_id' => $employee->id,
@@ -218,14 +257,16 @@ class ManageSalaries extends Page implements HasTable
                     'year' => $this->year,
                 ],
                 [
-                    'total_present_days' => $totalPresentDays,
-                    'total_overtime_hours' => $totalOvertimeMinutes / 60,
-                    'absent_days_salary_deduction' => $absentDaysDeduction,
+                    'total_present_days' => $presentDays,
+                    'total_hours' => $totalWorkedHours,
+                    'total_minutes' => $totalWorkedMinutes,
+                    'total_overtime_hours' => $totalOvertimeHours,
+                    'total_overtime_minutes' => $totalOvertimeMinutes,
+                    'deduction' => $deductionAmount,
                     'net_salary' => $netSalary,
                 ]
             );
         }
     }
-
 
 }

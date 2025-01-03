@@ -49,7 +49,7 @@
     <!-- Employee Details -->
     <div class="header">
         <h1>Salary Sheet</h1>
-        <p>Month: {{ \Carbon\Carbon::create()->month($salaries->month)->format('F') }} {{ $salaries->year }}</p>
+        <p>Month: <b>{{ \Carbon\Carbon::create()->month($salaries->month)->format('F') }} {{ $salaries->year }}</b></p>
     </div>
 
     <table class="details-table">
@@ -113,18 +113,37 @@
                     @endfor
                 </tr>
                 <!-- Status Row -->
+                <!-- Status Row -->
                 <tr>
                     <th>Status</th>
                     @for ($day = 6; $day <= 12; $day++)
                         @php
-                            $status = isset($week[$day % 7]) ? 
-                                ($attendance_status->firstWhere('date', $week[$day % 7]['date'])['status'] ?? 'A') : null;
+                            $attendanceDetails = isset($week[$day % 7]) 
+                                ? $attendance_status->firstWhere('date', $week[$day % 7]['date']) 
+                                : null;
+
+                            if ($attendanceDetails) {
+                                if ($attendanceDetails['status'] === 'Present') {
+                                    // Display worked hours/minutes and overtime hours/minutes if present
+                                    $workedHours = $attendanceDetails['hours_worked'] ?? 0;
+                                    $workedMinutes = $attendanceDetails['minutes_worked'] ?? 0;
+                                    $overtimeHours = $attendanceDetails['overtime_hours'] ?? 0;
+                                    $overtimeMinutes = $attendanceDetails['overtime_minutes'] ?? 0;
+                                    $status = "$workedHours:$workedMinutes  |  $overtimeHours:$overtimeMinutes";
+                                } else {
+                                    // Display "L" or "A" for leave or absence
+                                    $status = $attendanceDetails['status'] === 'Leave' ? 'L' : 'A';
+                                }
+                            } else {
+                                $status = '-';
+                            }
                         @endphp
                         <td>
-                            {{ $status ? ($status == 'Present' ? 'P' : ($status == 'Leave' ? 'L' : 'A')) : '-' }}
+                            {{ $status }}
                         </td>
                     @endfor
                 </tr>
+
             @endforeach
         </tbody>
     </table>
@@ -137,11 +156,23 @@
         </tr>
         <tr>
             <th>Absent Days</th>
-            <td>{{ collect($attendance_status)->where('status', 'Absent')->count() }}</td>
+            <td>{{ collect($attendance_status)->whereIn('status', ['Absent', 'Leave'])->count() }}</td>
+        </tr>
+        <tr>
+            <th>Hours</th>
+            <td>{{ $salaries->total_hours }}</td>
+        </tr>
+        <tr>
+            <th>Minutes</th>
+            <td>{{ $salaries->total_minutes }}</td>
         </tr>
         <tr>
             <th>Overtime Hours</th>
             <td>{{ $salaries->total_overtime_hours }}</td>
+        </tr>
+        <tr>
+            <th>Overtime Minutes</th>
+            <td>{{ $salaries->total_overtime_minutes }}</td>
         </tr>
         <tr>
             <th>Absent Deductions</th>

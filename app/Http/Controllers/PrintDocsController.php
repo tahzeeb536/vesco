@@ -94,9 +94,11 @@ class PrintDocsController extends Controller
                 'status' => $attendance->status,
                 // Include this line if your 'attendance' table has an 'overtime_hours' column
                 'overtime_hours' => $attendance->overtime_hours ?? 0,
+                'overtime_minutes' => $attendance->overtime_minutes ?? 0,
+                'hours_worked' => $attendance->hours_worked ?? 0,
+                'minutes_worked' => $attendance->minutes_worked ?? 0,
             ];
         });
-
         // Prepare data for the view
         $data = [
             'employee'           => $employee,

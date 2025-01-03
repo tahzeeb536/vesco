@@ -90,8 +90,8 @@ class AttendanceManagement extends Page implements HasTable
                     ->label('Status')
                     ->color(fn($state) => match ($state) {
                         'Present' => 'success',
-                        'Leave' => 'warning',
                         'Absent' => 'danger',
+                        'Leave' => 'warning',
                         default => 'gray',
                     })
                     ->default('-'),

@@ -11,7 +11,7 @@ class Salary extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employee_id', 'month', 'year', 'total_present_days', 'total_overtime_hours', 'deduction', 'net_salary'
+        'employee_id', 'month', 'year', 'total_present_days', 'total_hours', 'total_minutes', 'total_overtime_hours', 'total_overtime_minutes', 'deduction', 'net_salary'
     ];
 
     public function employee() : BelongsTo {

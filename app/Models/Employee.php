@@ -53,4 +53,8 @@ class Employee extends Model
     public function salaries(): HasMany  {
         return $this->hasMany(Salary::class, 'employee_id', 'id');
     }
+
+    public function advance_salary_deductions(): HasMany  {
+        return $this->hasMany(AdvanceSalaryDeduction::class, 'employee_id', 'id');
+    }
 }

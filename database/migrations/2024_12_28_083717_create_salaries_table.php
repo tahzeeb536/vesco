@@ -16,10 +16,14 @@ return new class extends Migration
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
             $table->integer('month');
             $table->integer('year');
-            $table->decimal('total_present_days', 5, 2)->default(0);
-            $table->decimal('total_overtime_hours', 5, 2)->default(0.00);
-            $table->decimal('deduction', 10, 2)->default(0.00);
-            $table->decimal('net_salary', 10, 2);
+            $table->unsignedInteger('total_present_days')->default(0);
+            $table->unsignedInteger('total_hours')->nullable()->default(0);
+            $table->unsignedInteger('total_minutes')->nullable()->default(0);
+            $table->unsignedInteger('total_overtime_hours')->nullable()->default(0);
+            $table->unsignedInteger('total_overtime_minutes')->nullable()->default(0);
+            $table->unsignedInteger('deduction')->default(0);
+            $table->unsignedInteger('net_salary');
+            $table->boolean('status')->default(0);
             $table->timestamps();
         });
     }
