@@ -23,6 +23,7 @@ class LetterHeadResource extends Resource
     protected static ?string $model = LetterHead::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationGroup = 'Letterheads';
 
     public static function form(Form $form): Form
     {

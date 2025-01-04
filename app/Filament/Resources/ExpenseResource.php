@@ -19,6 +19,7 @@ class ExpenseResource extends Resource
     protected static ?string $model = Expense::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static ?string $navigationGroup = 'Expenses';
 
     public static function form(Form $form): Form
     {
@@ -49,7 +50,8 @@ class ExpenseResource extends Resource
                     ->label('Receipt/Image')
                     ->nullable()
                     ->disk('public')
-                    ->directory('expense-images'),
+                    ->directory('expense-images')
+                    ->visibility('public'),
             ]);
     }
 
@@ -59,21 +61,26 @@ class ExpenseResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('date')
                     ->label('Date')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Category')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Description')
-                    ->limit(50),
+                    ->limit(50)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('expense_by')
                     ->label('Expense By')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('image')
-                    ->label('Receipt/Image'),
+                    ->label('Receipt/Image')
+                    ->width(60),
             ])
             ->filters([
                 Tables\Filters\Filter::make('date')

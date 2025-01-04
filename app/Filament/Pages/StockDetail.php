@@ -20,6 +20,8 @@ class StockDetail extends Page implements Tables\Contracts\HasTable
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
     protected static string $view = 'filament.pages.stock-detail';
 
+    protected static ?string $navigationGroup = 'Reports';
+    
     protected function getTableQuery()
     {
         return ProductVariant::query()

@@ -19,6 +19,8 @@ class StockAdjustmentResource extends Resource
     protected static ?string $model = StockAdjustment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static ?string $navigationGroup = 'Stock Management';
+    protected static ?int $navigationSort = 8;
 
     public static function form(Form $form): Form
     {

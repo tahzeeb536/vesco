@@ -18,6 +18,8 @@ class EmployeeResource extends Resource
     protected static ?string $model = Employee::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-identification';
+    protected static ?string $navigationGroup = 'Employees';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -35,7 +37,10 @@ class EmployeeResource extends Resource
                 Forms\Components\TextInput::make('cnic')
                     ->maxLength(20)
                     ->label('CNIC'),
-                Forms\Components\FileUpload::make('photo'),
+                Forms\Components\FileUpload::make('photo')
+                    ->disk('public')
+                    ->directory('employee-images')
+                    ->visibility('public'),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
                     ->required()

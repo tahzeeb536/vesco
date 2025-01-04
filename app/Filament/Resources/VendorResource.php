@@ -17,6 +17,7 @@ use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 class VendorResource extends Resource
 {
     protected static ?string $model = Vendor::class;
+    protected static ?string $navigationGroup = 'Vendors';
 
     public static function getNavigationLabel(): string
     {

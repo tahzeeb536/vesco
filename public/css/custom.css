@@ -1,6 +1,6 @@
 /* body.bg-gray-50 {
     background-color: #f3f4f6;
-}
+} */
 
 .fi-sidebar-nav {
     overflow-y: hidden !important;
@@ -11,9 +11,10 @@
 }
 
 .fi-sidebar-nav-groups {
-    row-gap: .7rem !important;
+    row-gap: 0 !important;
 }
 
+/* 
 .fi-sidebar-item-label,
 .fi-sidebar-group-label {
     color: #4b5563 !important;
@@ -27,10 +28,6 @@ a.fi-sidebar-item-button:hover .fi-sidebar-item-icon {
 
 .fi-sidebar-item-active a.fi-sidebar-item-button {
     background-color: hsla(207, 5%, 63%, 0.17);
-}
-
-.fi-sidebar-nav-groups {
-    row-gap: 0 !important;
 }
 
 .fi-logo {

@@ -19,6 +19,7 @@ class OutOfStock extends Page implements Tables\Contracts\HasTable
 
     protected static ?string $navigationIcon = 'heroicon-o-document-minus';
     protected static string $view = 'filament.pages.out-of-stock';
+    protected static ?string $navigationGroup = 'Reports';
 
     protected function getTableQuery()
     {

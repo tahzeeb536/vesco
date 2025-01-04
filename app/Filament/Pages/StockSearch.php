@@ -11,4 +11,6 @@ class StockSearch extends Page
     
     protected static ?string $navigationIcon = 'heroicon-o-magnifying-glass';
     protected static string $view = 'filament.pages.stock-search';
+    
+    protected static ?string $navigationGroup = 'Reports';
 }

@@ -21,6 +21,8 @@ class GrnResource extends Resource
     protected static ?string $model = Grn::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationGroup = 'Stock Management';
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $navigationLabel = 'Goods Received (GRN)';
 

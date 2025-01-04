@@ -18,7 +18,7 @@ class RackResource extends Resource
     protected static ?string $model = Rack::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-table-cells';
-    // protected static ?string $navigationGroup = 'Manage Stores';
+    protected static ?string $navigationGroup = 'Stores';
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form

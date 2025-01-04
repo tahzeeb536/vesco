@@ -18,7 +18,7 @@ class SizeResource extends Resource
     protected static ?string $model = Size::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
-    // protected static ?string $navigationGroup = 'Manage Products';
+    protected static ?string $navigationGroup = 'Products';
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form

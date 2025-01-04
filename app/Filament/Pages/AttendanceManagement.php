@@ -19,7 +19,10 @@ class AttendanceManagement extends Page implements HasTable
     use InteractsWithTable;
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
-    protected static ?string $navigationLabel = 'Daily Attendance';
+    protected static ?string $navigationLabel = 'Daily Attendance';    
+    protected static ?string $navigationGroup = 'Employees';
+    protected static ?int $navigationSort = 3;
+
     protected static string $view = 'filament.pages.attendance-management';
 
     public $selectedEmployeeId;

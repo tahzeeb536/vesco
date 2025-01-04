@@ -24,6 +24,8 @@ class ManageSalaries extends Page implements HasTable
     use InteractsWithTable, InteractsWithForms, HasPageShield;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static ?string $navigationGroup = 'Employees';
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationLabel = 'Salaries';
 

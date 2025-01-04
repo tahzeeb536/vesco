@@ -21,6 +21,8 @@ class SaleInvoiceReturnResource extends Resource
     protected static ?string $model = SaleInvoiceReturn::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-currency-dollar';
+    protected static ?string $navigationGroup = 'Stock Management';
+    protected static ?int $navigationSort = 11;
 
     public static function form(Form $form): Form
     {

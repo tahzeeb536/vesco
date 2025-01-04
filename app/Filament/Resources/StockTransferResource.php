@@ -22,6 +22,8 @@ class StockTransferResource extends Resource
     protected static ?string $model = StockTransfer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static ?string $navigationGroup = 'Stock Management';
+    protected static ?int $navigationSort = 9;
 
     public static function form(Form $form): Form
     {

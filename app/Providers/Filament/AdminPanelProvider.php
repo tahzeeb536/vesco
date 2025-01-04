@@ -59,6 +59,20 @@ class AdminPanelProvider extends PanelProvider
             ->spa(true)
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+            ])
+            ->navigationGroups([
+                'Users',
+                'Employees',
+                'Products',
+                'Stores',
+                'Stock Management',
+                'Packaging Lists',
+                'Expenses',
+                'Leterheads',
+                'Courier Receipts',
+                'Customers',
+                'Vendors',
+                'Reports',
             ]);
     }
 }
