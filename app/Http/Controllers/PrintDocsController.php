@@ -9,8 +9,11 @@ use App\Models\LetterHead;
 use App\Models\SaleInvoice;
 use App\Models\Salary;
 use App\Models\Attendance;
+use App\Models\Customer;
+use App\Models\CourierReceipt;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Crypt;
+use Carbon\Carbon;
 
 class PrintDocsController extends Controller
 {
@@ -108,6 +111,20 @@ class PrintDocsController extends Controller
 
         // Return the view
         return view('pdf.salary-sheet', $data);
+    }
+
+    public function print_courier_receipt($id) {
+        $receipt = CourierReceipt::findOrFail($id);
+        $customer_id = $receipt->receiver_company_name;
+        if($customer_id) {
+            $customer = Customer::find($customer_id);
+            $receiver_company = $customer?->organization;
+        }
+        else {
+            $receiver_company = '';
+        }
+        
+        return view('pdf.courier-receipt', compact('receipt', 'receiver_company'));
     }
 
 

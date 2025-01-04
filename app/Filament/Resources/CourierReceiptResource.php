@@ -170,6 +170,14 @@ class CourierReceiptResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('print_courier_receipt')
+                    ->label('Print')
+                    ->icon('heroicon-o-printer')
+                    ->color('primary')
+                    ->url(fn (CourierReceipt $record) => route('print_courier_receipt', [
+                        'id' => $record->id
+                    ]))
+                    ->openUrlInNewTab(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])

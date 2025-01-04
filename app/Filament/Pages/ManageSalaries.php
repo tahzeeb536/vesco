@@ -129,8 +129,7 @@ class ManageSalaries extends Page implements HasTable
                         'month' => $selectedMonth,
                         'year' => $selectedYear,
                     ]))
-                    ->openUrlInNewTab()
-                    ->tooltip('View and Print Salary Sheet'),
+                    ->openUrlInNewTab(),
             ])
             ->description("Salaries for: " . Carbon::createFromDate($this->year, $this->month, 1)->format('F Y'))
             ->filters([])

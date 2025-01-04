@@ -55,6 +55,8 @@ Route::get('/sale-invoice/print-invoice/{record}', [PrintDocsController::class, 
 Route::get('/sale-invoice/print-invoice-with-stamp/{record}', [PrintDocsController::class, 'print_sale_invoice_with_stamp'])->name('print_sale_invoice_with_stamp');
 
 Route::get('/salary/print/{id}/{month}/{year}', [PrintDocsController::class, 'print_salary'])->name('print_salary');
+Route::get('/courier-receipt/print/{id}', [PrintDocsController::class, 'print_courier_receipt'])->name('print_courier_receipt');
+
 
 Route::get('/export-out-of-stock', [ExportController::class, 'exportOutOfStock'])->name('export.out_of_stock');
 Route::get('/export-stock-detail', [ExportController::class, 'exportStockDetail'])->name('export.stock_detail');
