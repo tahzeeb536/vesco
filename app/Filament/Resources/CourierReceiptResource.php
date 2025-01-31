@@ -94,7 +94,7 @@ class CourierReceiptResource extends Resource
                                     $query->where('organization', 'like', "%{$search}%");
                                 }
                                 return $query->limit(50)
-                                    ->pluck('organization', 'id')
+                                    ->pluck('organization')
                                     ->toArray();
                             })
                             ->columnSpan(6),
@@ -132,14 +132,13 @@ class CourierReceiptResource extends Resource
                             ->columnSpan(4),
                         Forms\Components\TextInput::make('kilos')
                             ->label('Kilos')
-                            ->numeric()
                             ->columnSpan(4),
                         Forms\Components\Select::make('type')
                             ->label('Type')
                             ->options(function () {
                                 return [
                                     'Package' => 'Package',
-                                    'Docuemnts' => 'Package'
+                                    'Docuemnts' => 'Docuemnts'
                                 ];
                             })
                             ->columnSpan(4),
@@ -152,11 +151,11 @@ class CourierReceiptResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(
-                CourierReceipt::query()
-                ->select('courier_receipts.*', 'customers.organization as receiver_company_name')
-                ->join('customers', 'customers.id', '=', 'courier_receipts.receiver_company_name')
-            )
+            // ->query(
+            //     CourierReceipt::query()
+            //     ->select('courier_receipts.*', 'customers.organization as receiver_company_name')
+            //     ->join('customers', 'customers.id', '=', 'courier_receipts.receiver_company_name')
+            // )
             ->columns([
                 Tables\Columns\TextColumn::make('date')->sortable(),
                 Tables\Columns\TextColumn::make('receiver_company_name')

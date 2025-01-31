@@ -42,7 +42,7 @@ return new class extends Migration
  
              // Other Information
              $table->string('items')->nullable();
-             $table->decimal('kilos', 8, 2)->nullable();
+             $table->string('kilos')->nullable();
              $table->string('type')->nullable();
              $table->text('extra_information')->nullable();
 

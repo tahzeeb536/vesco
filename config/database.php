@@ -63,6 +63,44 @@ return [
             ]) : [],
         ],
 
+        'old_db' => [
+            'driver' => 'mysql',
+            'host' => env('OLD_DB_HOST', '127.0.0.1'),
+            'port' => env('OLD_DB_PORT', '3306'),
+            'database' => env('OLD_DB_DATABASE', 'old_database'),
+            'username' => env('OLD_DB_USERNAME', 'old_user'),
+            'password' => env('OLD_DB_PASSWORD', 'old_password'),
+            'unix_socket' => env('OLD_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('OLD_MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'old_orders' => [
+            'driver' => 'mysql',
+            'host' => env('OLD_ORDERS_DB_HOST', '127.0.0.1'),
+            'port' => env('OLD_ORDERS_DB_PORT', '3306'),
+            'database' => env('OLD_ORDERS_DB_DATABASE', 'old_orders_database'),
+            'username' => env('OLD_ORDERS_DB_USERNAME', 'old_orders_user'),
+            'password' => env('OLD_ORDERS_DB_PASSWORD', 'old_orders_password'),
+            'unix_socket' => env('OLD_ORDERS_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('OLD_ORDERS_MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
