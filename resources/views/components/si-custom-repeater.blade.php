@@ -7,12 +7,16 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
             id: item.id || Date.now(),
             variant_id: item.variant_id || '',
             variant_name: item.variant?.name || '',
+            product_name: item.product_name || '',
+            article_number: item.article_number || '',
+            size: item.size || '',
+            color: item.color || '',
             quantity: item.quantity || 1,
             discount: item.discount || 0,
             unit_price: item.unit_price || 0,
             total_price: item.total_price || 0,
         }))
-        : [{ id: Date.now(), variant_id: '', variant_name: '', quantity: 1, discount: 0, unit_price: 0, total_price: 0 }],
+        : [{ id: Date.now(), variant_id: '', variant_name: '', product_name: '', article_number: '', size: '', color: '', quantity: 1, discount: 0, unit_price: 0, total_price: 0 }],
     
     orderItems: @entangle('data.order_items'),
 

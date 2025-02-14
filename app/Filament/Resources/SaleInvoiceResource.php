@@ -59,7 +59,7 @@ class SaleInvoiceResource extends Resource
                     ->required(),
 
                 Forms\Components\TextInput::make('port_of_loading')
-                    ->label('Port of Landing'),
+                    ->label('Port of Loading'),
 
                 Forms\Components\TextInput::make('port_of_discharge')
                     ->label('Port of Discharge'),
@@ -108,12 +108,12 @@ class SaleInvoiceResource extends Resource
                 Forms\Components\Grid::make(1)
                     ->schema([
                         Forms\Components\View::make('components.si-custom-repeater')
-                            ->label('Items')
-                            ->columnSpan('full')
-                    ])
-                    ->hiddenOn('view'),
+                                ->label('Items')
+                                ->columnSpan('full')
+                        ])
+                        ->hiddenOn('view'),
 
-                Forms\Components\Grid::make(1)
+                    Forms\Components\Grid::make(1)
                     ->schema([
                         Forms\Components\View::make('components.si-view-custom-repeater')
                             ->label('Items')
@@ -167,17 +167,17 @@ class SaleInvoiceResource extends Resource
                     })
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('status')
-                    ->sortable()
-                    ->formatStateUsing(function ($state) {
-                        return ucwords(str_replace('_', ' ', $state));
-                    })
-                    ->badge()
-                    ->colors([
-                        'success' => 'paid',         
-                        'danger' => 'not_paid',      
-                        'warning' => 'partially_paid',
-                    ]),
+                // Tables\Columns\TextColumn::make('status')
+                //     ->sortable()
+                //     ->formatStateUsing(function ($state) {
+                //         return ucwords(str_replace('_', ' ', $state));
+                //     })
+                //     ->badge()
+                //     ->colors([
+                //         'success' => 'paid',         
+                //         'danger' => 'not_paid',      
+                //         'warning' => 'partially_paid',
+                //     ]),
             ])
             ->filters([
                 //
