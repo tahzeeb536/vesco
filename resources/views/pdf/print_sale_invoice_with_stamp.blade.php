@@ -210,7 +210,7 @@
     						</div>
     					</td>
     					<td align="center"  style="padding:0px 0 0 0;">
-                                                        <img width="334" height="186" style="object-fit:contain;" src="{{ asset('images/final_logo.png') }}" alt="">
+                                                        <img style="width: 200px; height: auto; object-fit:contain;" src="{{ asset('images/final_logo.png') }}" alt="">
                                 						<img src="path/to/your/barcode.png" alt="">
     					</td>
     					<td width="33.33%" style="padding:13px 0 0 0;">
