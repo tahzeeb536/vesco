@@ -57,6 +57,21 @@ class EmployeeResource extends Resource
                     ->numeric()
                     ->minValue(0)
                     ->maxLength(10),
+                Forms\Components\TextInput::make('home_allowance')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxLength(10)
+                    ->default(0),
+                Forms\Components\TextInput::make('medical_allowance')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxLength(10)
+                    ->default(0),
+                Forms\Components\TextInput::make('mobile_allowance')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxLength(10)
+                    ->default(0),
                 Forms\Components\Toggle::make('status')
                     ->label('Active')
                     ->default(true),
@@ -98,6 +113,18 @@ class EmployeeResource extends Resource
                 Tables\Columns\TextColumn::make('basic_salary')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('home_allowance')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('medical_allowance')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('mobile_allowance')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('status')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')

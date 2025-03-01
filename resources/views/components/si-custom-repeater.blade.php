@@ -26,7 +26,7 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
             .catch(() => []);
     },
     addRow() {
-        this.rows.push({ id: Date.now(), variant_id: '', variant_name: '', quantity: 1, unit_price: 0, total_price: 0 });
+        this.rows.push({ id: Date.now(), variant_id: '', variant_name: '', product_name: '', article_number: '', size: '', color: '', quantity: 1, discount: 0, unit_price: 0, total_price: 0 });
         this.syncOrderItems();
     },
     removeRow(id) {

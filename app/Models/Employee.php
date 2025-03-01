@@ -23,6 +23,9 @@ class Employee extends Model
         'address',
         'type',
         'basic_salary',
+        'home_allowance',
+        'medical_allowance',
+        'mobile_allowance',
         'status',
     ];
 
