@@ -26,8 +26,7 @@ class MoveOldDbData extends Command
      */
     public function handle()
     {
-        // Manage categories
-        $this->info('Moving categories data...');
+        // $this->info('Moving categories data...');
         // $old_categories = DB::connection('old_db')->table('categories')->get();
         // foreach ($old_categories as $category) {
         //     DB::connection('mysql')->table('categories')->insert([
@@ -40,8 +39,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        $this->info('Creating store, rooms. racks and shelves...');
-        // Create Store
+        // $this->info('Creating store, rooms. racks and shelves...');
         // DB::connection('mysql')->table('stores')->insert([
         //     'name' => 'Store one',
         //     'status' => 1,
@@ -49,7 +47,6 @@ class MoveOldDbData extends Command
         //     'updated_at' => now(),
         // ]);
 
-        // Create Store
         // DB::connection('mysql')->table('rooms')->insert([
         //     'name' => 'Room one',
         //     'store_id' => 1,
@@ -58,7 +55,6 @@ class MoveOldDbData extends Command
         //     'updated_at' => now(),
         // ]);
 
-        // Create Store
         // DB::connection('mysql')->table('racks')->insert([
         //     'name' => 'Rack one',
         //     'room_id' => 1,
@@ -67,7 +63,6 @@ class MoveOldDbData extends Command
         //     'updated_at' => now(),
         // ]);
 
-        // Create Store
         // DB::connection('mysql')->table('shelves')->insert([
         //     'name' => 'Shelf one',
         //     'rack_id' => 1,
@@ -76,8 +71,7 @@ class MoveOldDbData extends Command
         //     'updated_at' => now(),
         // ]);
 
-        // Create sizes, fetch all distinct sizes and create
-        $this->info('Creating sizes data...');
+        // $this->info('Creating sizes data...');
         // $old_sizes = DB::connection('old_db')
         //     ->table('products')
         //     ->select('size')
@@ -96,8 +90,7 @@ class MoveOldDbData extends Command
         // }
 
 
-        // Create colors, fetch all distinct sizes and create
-        $this->info('Creating colors data...');
+        // $this->info('Creating colors data...');
         // $old_colors = DB::connection('old_db')
         //     ->table('products')
         //     ->select('color')
@@ -115,8 +108,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        // Import products
-        $this->info('Importing products data...');
+        // $this->info('Importing products data...');
         // $old_products = DB::connection('old_db')
         //     ->table('products')
         //     ->where('parent_id', 0)
@@ -136,7 +128,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        // import variants
+        // $this->info('Importing product variants');
         // $old_variants = DB::connection('old_db')
         //     ->table('products')
         //     ->where('parent_id', '>', 0)
@@ -161,6 +153,7 @@ class MoveOldDbData extends Command
         //         dump('==========');
         //         dump($product);
         //         dump($new_product);
+        //         continue;
         //     }
         //     else {   
         //         $color = $all_colors->where('name', $product->color)->first();
@@ -183,8 +176,7 @@ class MoveOldDbData extends Command
         // }
 
 
-        // Import Vendors
-        $this->info('Importing vendors data...');
+        // $this->info('Importing vendors data...');
         // $old_vendors = DB::connection('old_db')
         //     ->table('vendors')
         //     ->select('vendors.*', 'countries.country_name')
@@ -209,7 +201,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        $this->info('Importing customers data...');
+        // $this->info('Importing customers data...');
         // $old_customers = DB::connection('old_db')
         //     ->table('customers')
         //     ->select('customers.*', 'countries.country_name')
@@ -235,8 +227,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        // Importing expense categories
-        // $this->info('Importing expense categories...');
+       
         // $old_expense_categories = DB::connection('old_db')
         //     ->table('expenses_categories')
         //     ->get();
@@ -249,16 +240,28 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        // Importing expe3nses
-        $this->info('Importing expenses...');
+        // DB::connection('mysql')->table('expense_categories')->insert([
+        //     'id' => 1,
+        //     'name' => 'General',
+        //     'status' => 1
+        // ]);
+
+        // $this->info('Importing expenses...');
         // $old_expenses = DB::connection('old_db')
         //     ->table('expenses')
         //     ->get();
 
         // foreach ($old_expenses as $expense) {
+        //     $expense_cat = DB::connection('old_db')->table('expenses_categories')->find($expense->exp_id);
+        //     if($expense->id) {
+        //         $expense_cat_id = 1;
+        //     }
+        //     else {
+        //         $expense_cat_id = $expense->exp_id;
+        //     }
         //     DB::connection('mysql')->table('expenses')->insert([
         //         'id' => $expense->id,
-        //         'expense_category_id' => $expense->exp_id,
+        //         'expense_category_id' => $expense_cat_id,
         //         'date' => $expense->date,
         //         'description' => $expense->description,
         //         'amount' => $expense->amount,
@@ -268,7 +271,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        $this->info('Importing letterheads...');
+        // $this->info('Importing letterheads...');
         // $letterHeads = DB::connection('old_db')
         //     ->table('letterheads')
         //     ->get();
@@ -284,7 +287,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        $this->info('Importing Packaging lists...');
+        // $this->info('Importing Packaging lists...');
         // $packaging_lists = DB::connection('old_db')
         //     ->table('packing_lists')
         //     ->get();
@@ -307,6 +310,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
+        // $this->info('Importing packaging_boxes...');
         // $packaging_list_items = DB::connection('old_db')
         //     ->table('packing_lists_items')
         //     ->get();
@@ -326,7 +330,7 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        $this->info('Importing courier receipts...');
+        // $this->info('Importing courier receipts...');
         // $airway_bills = DB::connection('old_db')
         //     ->table('airway_bills')
         //     ->get();
@@ -363,38 +367,297 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        $this->info('Importing orders...');
-        $orders = DB::connection('old_orders')
-            ->table('orders')
+        // $this->info('Importing orders...');
+        // $orders = DB::connection('old_orders')
+        //     ->table('orders')
+        //     ->get();
+
+        // foreach ($orders as $item) {
+        //     DB::connection('mysql')->table('orders')->insert([
+        //         // 'id' => $item->id,
+        //         'order_date' => $item->order_date,
+        //         'email_date' => $item->email_date,
+        //         'delivery_date' => $item->delivery_date,
+        //         'order_name' => $item->name,
+        //         'customer_id' => $item->customer_id,
+        //         'invoice_number' => null,
+        //         'status' => $item->status,
+        //         'currency' => $item->currency,
+        //         'order_amount' => $item->order_amount,
+        //         'damage_amount' => $item->damage_amount,
+        //         'grand_total' => $item->order_amount - $item->damage_amount,
+        //         'paid_amount' => $item->paid_amount,
+        //         'balance' => ($item->order_amount - $item->damage_amount) - $item->paid_amount,
+        //         'order_file_admin' => $item->file_admin,
+        //         'order_file_manager' => $item->file_manager,
+        //         'total_boxes' => (isset($item->boxes) && !empty($item->boxes)) ? $item->boxes : 0,
+        //         'boxes_details' => (isset($item->boxes) && !empty($item->boxes)) ? $item->boxes_details : null,
+        //         'shipping_carrier' => $item->shipping_carrier,
+        //         'tracking_number' => $item->tracking_number,
+        //         'airway_bill_number' => $item->airway_bill_no,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]);
+        // }
+
+        // $this->info('Importing invoices...');
+        // $invoices = DB::connection('old_db')
+        //     ->table('invoice')
+        //     ->get();
+
+        // foreach ($invoices as $item) {
+            
+        //     $customer = DB::connection('mysql')->table('customers')->find($item->customer_id);
+            
+        //     if(!$customer) {
+        //         dump($item);
+        //         continue;
+        //     }
+        //     DB::connection('mysql')->table('sale_invoices')->insert([
+        //         'id' => $item->id,
+        //         'customer_id' => $item->customer_id,
+        //         'invoice_number' => $item->invoice_no,
+        //         'invoice_date' => $item->date,
+        //         'ntn' => $item->ntn_no,
+        //         'financial_instrument_no' => $item->eform_no,
+        //         'bank_name' => $item->bank,
+        //         'shipping' => null,
+        //         'port_of_loading' => null,
+        //         'port_of_discharge' => null,
+        //         'term' => $item->term,
+        //         'hs_code' => $item->hs_code,
+        //         'po_no' => $item->po_no,
+        //         'freight_charges' => $item->frieght_charges,
+        //         'tax_charges' => $item->tax_charges,
+        //         'total_amount' => null,
+        //         'paid_amount' => null,
+        //         'pending_amount' => null,
+        //         'note' => null,
+        //         'status' => null,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]);
+        // }
+
+
+        // $this->info('Importing invoice items...');
+        // $invoice_items = DB::connection('old_db')
+        //     ->table('invoice_items')
+        //     ->get();
+
+        // foreach ($invoice_items as $item) {
+            
+        //     $total_price = $item->qty * $item->rate;
+        //     if ($item->discount > 0) {
+        //         $total_price -= ($total_price * ($item->discount / 100));
+        //     }
+        //     $total_price = round($total_price, 2);
+
+        //     DB::connection('mysql')->table('sale_invoice_items')->insert([
+        //         'id' => $item->id,
+        //         'sale_invoice_id' => $item->inv_id,
+        //         'variant_id' => null,
+        //         'article_number' => $item->article_no,
+        //         'size' => $item->size,
+        //         'color' => $item->color,
+        //         'quantity' => $item->qty,
+        //         'discount' => $item->discount,
+        //         'unit_price' => $item->rate,
+        //         'total_price' => $total_price,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]);
+        // }
+
+        // $this->info('Importing invoice with IDs...');
+        // $invoice_items = DB::connection('old_db')
+        //     ->table('invoice_items')
+        //     ->get();
+
+        // foreach ($invoice_items as $item) {
+
+        //     $item_id = null;
+        //     $variant_id = null;
+
+        //     $variant = DB::connection('mysql')
+        //         ->table('product_variants')
+        //         ->where('name', 'like', '%' . $item->article_no . '%')
+        //         ->where('name', 'like', '%' . $item->size . '%')
+        //         ->where('name', 'like', '%' . $item->color . '%')
+        //         ->first();
+
+        //     if($variant) {
+        //         $item_id = $variant->id;
+        //         $product = DB::connection('mysql')
+        //             ->table('products')
+        //             ->where('id', $variant->product_id)
+        //             ->first();
+        //         $product_name = $product->name;
+        //     }
+        //     else {
+        //         $v = DB::connection('mysql')
+        //             ->table('product_variants')
+        //             ->where('name', 'like', '%'.$item->article_no.'%')
+        //             ->first();
+
+        //         if($v) {
+        //             $item_id = $v->id;
+                    
+        //             $product = DB::connection('mysql')
+        //                 ->table('products')
+        //                 ->where('id', $v->product_id)
+        //                 ->first();
+        //             $product_name = $product->name;
+        //         }
+        //     }
+
+        //     // if($item->prod_id > 0) {
+        //     //     $item_id = $item->prod_id;
+        //     // }
+        //     // else {
+        //     //     $product = DB::connection('mysql')
+        //     //         ->table('products')
+        //     //         ->where('article_number', $item->article_no)
+        //     //         ->first();
+                
+        //     //     if($product) {
+        //     //         $variants = DB::connection('mysql')
+        //     //             ->table('product_variants')
+        //     //             ->where('product_id', $product->id)
+        //     //             ->get();
+        //     //         $variant = '';
+        //     //         if($variants) {
+        //     //             foreach ($variants as $prod) {
+        //     //                 $size = DB::connection('mysql')
+        //     //                     ->table('sizes')
+        //     //                     ->where('name', $item->size)
+        //     //                     ->first();
+        //     //                 if($size) {
+        //     //                     if($prod->name == $item->size) {
+                                    
+        //     //                     }
+        //     //                 }
+        //     //             }
+        //     //         }
+        //     //     }
+                
+        //     // }
+            
+        //     $total_price = $item->qty * $item->rate;
+        //     if ($item->discount > 0) {
+        //         $total_price -= ($total_price * ($item->discount / 100));
+        //     }
+        //     $total_price = round($total_price, 2);
+
+        //     DB::connection('mysql')->table('sale_invoice_items')->insert([
+        //         'id' => $item->id,
+        //         'sale_invoice_id' => $item->inv_id,
+        //         'variant_id' => $item_id,
+        //         'product_name' => $product_name,
+        //         'article_number' => $item->article_no,
+        //         'size' => $item->size,
+        //         'color' => $item->color,
+        //         'quantity' => $item->qty,
+        //         'discount' => $item->discount,
+        //         'unit_price' => $item->rate,
+        //         'total_price' => $total_price,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]);
+        // }
+
+        // $this->info('Importing employees....');
+        // $old_employees = DB::connection('old_db')
+        //     ->table('employees')
+        //     ->get();
+
+        // foreach($old_employees as $employee) {
+        //     DB::connection('mysql')
+        //         ->table('employees')
+        //         ->insert([
+        //             'id' => $employee->id,
+        //             'name' => $employee->name,
+        //             'name_urdu' => $employee->urdu_name,
+        //             'father_name' => $employee->father_name,
+        //             'dob' => $employee->dob,
+        //             'cnic' => $employee->cnic,
+        //             'photo' => $employee->photo,
+        //             'phone' => $employee->phone,
+        //             'address' => $employee->address,
+        //             'type' => 'Salary Based',
+        //             'basic_salary' => $employee->salary,
+        //             'home_allowance' => $employee->home_allowance,
+        //             'medical_allowance' => $employee->medical_allowance,
+        //             'mobile_allowance' => $employee->mobile_allowance,
+        //             'status' => $employee->status,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        // }
+
+        
+
+        $this->info('Importing attendance data....');
+        $old_attendance = DB::connection('old_db')
+            ->table('employees_attendance')
             ->get();
 
-        foreach ($orders as $item) {
-            DB::connection('mysql')->table('orders')->insert([
-                // 'id' => $item->id,
-                'order_date' => $item->order_date,
-                'email_date' => $item->email_date,
-                'delivery_date' => $item->delivery_date,
-                'order_name' => $item->name,
-                'customer_id' => $item->customer_id,
-                'invoice_number' => null,
-                'status' => $item->status,
-                'currency' => $item->currency,
-                'order_amount' => $item->order_amount,
-                'damage_amount' => $item->damage_amount,
-                'grand_total' => $item->order_amount - $item->damage_amount,
-                'paid_amount' => $item->paid_amount,
-                'balance' => ($item->order_amount - $item->damage_amount) - $item->paid_amount,
-                'order_file_admin' => $item->file_admin,
-                'order_file_manager' => $item->file_manager,
-                'total_boxes' => (isset($item->boxes) && !empty($item->boxes)) ? $item->boxes : 0,
-                'boxes_details' => (isset($item->boxes) && !empty($item->boxes)) ? $item->boxes_details : null,
-                'shipping_carrier' => $item->shipping_carrier,
-                'tracking_number' => $item->tracking_number,
-                'airway_bill_number' => $item->airway_bill_no,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        foreach($old_attendance as $attendance) {
+
+            $employee_exists = DB::connection('mysql')->table('employees')->where('id', $attendance->emp_id)->first();
+
+            if($employee_exists) {
+                $status = $attendance->status;
+                if($status == 'P') {
+                    $status = 'Present';
+                }
+                elseif($status == 'A') {
+                    $status = 'Absent';
+                }
+                else {
+                    $status = 'Leave';
+                }
+
+                $h = $attendance->hours;
+                $hours = (int) floor($h);
+                $minutes = (int) round(($h - $hours) * 60);
+
+                $ot = $attendance->overtime;
+                $ot_h = (int) floor($ot);
+                $ot_m = (int) round(($ot - $ot_h) * 60);
+
+                $in_time = trim($attendance->in_time);
+                $out_time = trim($attendance->out_time);
+                
+                if (!empty($in_time) && !empty($out_time)) {
+                    $clock_in = \Carbon\Carbon::createFromFormat('g:i A', $in_time)->format('H:i:s');
+                    $clock_out = \Carbon\Carbon::createFromFormat('g:i A', $out_time)->format('H:i:s');
+                }
+                else {
+                    $clock_in = null;
+                    $clock_out = null;
+                }
+
+                DB::connection('mysql')
+                ->table('attendances')
+                ->insert([
+                    'id' => $attendance->id,
+                    'employee_id' => $attendance->emp_id,
+                    'date' => $attendance->date,
+                    'status' => $status,
+                    'clock_in' => $clock_in,
+                    'clock_out' => $clock_out,
+                    'hours_worked' => $hours,
+                    'minutes_worked' => $minutes,
+                    'overtime_hours' => $ot_h,
+                    'overtime_minutes' => $ot_m,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            
         }
+
 
     }
 

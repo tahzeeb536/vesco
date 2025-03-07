@@ -113,6 +113,45 @@ class PrintDocsController extends Controller
         return view('pdf.salary-sheet', $data);
     }
 
+    public function print_all_salary($month, $year)
+    {
+        // Fetch all active employees with their salary for the given month and year
+        $employees = Employee::where('status', true)
+            ->with(['salaries' => function($query) use ($month, $year) {
+                $query->where('month', $month)
+                      ->where('year', $year);
+            }])
+            ->get();
+
+        // For each employee, fetch and map their attendance records
+        foreach ($employees as $employee) {
+            $employee->attendance_status = Attendance::where('employee_id', $employee->id)
+                ->whereMonth('date', $month)
+                ->whereYear('date', $year)
+                ->get()
+                ->map(function ($attendance) {
+                    $attendanceDate = $attendance->date instanceof Carbon
+                        ? $attendance->date
+                        : Carbon::parse($attendance->date);
+                    return [
+                        'date' => $attendanceDate->format('Y-m-d'),
+                        'status' => $attendance->status,
+                        'overtime_hours' => $attendance->overtime_hours ?? 0,
+                        'overtime_minutes' => $attendance->overtime_minutes ?? 0,
+                        'hours_worked' => $attendance->hours_worked ?? 0,
+                        'minutes_worked' => $attendance->minutes_worked ?? 0,
+                    ];
+                });
+            // Calculate absent days based on total days in month minus present days (if salary record exists)
+            $daysInMonth = Carbon::create($year, $month)->daysInMonth;
+            $salary = $employee->salaries->first();
+            $employee->absent_days = $salary ? ($daysInMonth - $salary->total_present_days) : 0;
+        }
+
+        // Return the view with all employees’ salary slips
+        return view('pdf.all-salary-slips', compact('employees', 'month', 'year'));
+    }
+
     public function print_courier_receipt($id) {
         $receipt = CourierReceipt::findOrFail($id);
         $customer_id = $receipt->receiver_company_name;

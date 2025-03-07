@@ -54,7 +54,7 @@ class AttendanceManagement extends Page implements HasTable
     protected function table(Table $table): Table
     {
         return $table->query(
-            Employee::query()->with(['attendance' => function ($query) {
+            Employee::query()->where('status', 1)->with(['attendance' => function ($query) {
                 $query->where('date', $this->selectedDate);
             }])
         )

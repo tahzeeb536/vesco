@@ -55,6 +55,7 @@ Route::get('/sale-invoice/print-invoice/{record}', [PrintDocsController::class, 
 Route::get('/sale-invoice/print-invoice-with-stamp/{record}', [PrintDocsController::class, 'print_sale_invoice_with_stamp'])->name('print_sale_invoice_with_stamp');
 
 Route::get('/salary/print/{id}/{month}/{year}', [PrintDocsController::class, 'print_salary'])->name('print_salary');
+Route::get('/salary/print-salaries/{month}/{year}', [PrintDocsController::class, 'print_all_salary'])->name('print_all_salary');
 Route::get('/courier-receipt/print/{id}', [PrintDocsController::class, 'print_courier_receipt'])->name('print_courier_receipt');
 
 
