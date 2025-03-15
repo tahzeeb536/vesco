@@ -157,20 +157,25 @@ class ManageSalaries extends Page implements HasTable
                 ->whereMonth('date', $this->month)
                 ->whereYear('date', $this->year)
                 ->get();
-
+            
             $presentDays = 0;
             $totalWorkedHours = 0;
             $totalWorkedMinutes = 0;
             $totalOvertimeHours = 0;
             $totalOvertimeMinutes = 0;
+            $lateHours = 0;
 
             foreach ($attendances as $attendance) {
                 if ($attendance->status === 'Present') {
                     $hoursWorked = $attendance->hours_worked ?? 0;
                     $minutesWorked = $attendance->minutes_worked ?? 0;
-                    $overtimeHours = $attendance->overtime_hours ?? 0;
-                    $overtimeMinutes = $attendance->overtime_minutes ?? 0;
-
+                    // Calculate worked time in hours (fractional)
+                    $workedTime = $hoursWorked + ($minutesWorked / 60);
+                    
+                    if ($workedTime < 8) {
+                        $lateHours += (8 - $workedTime);
+                    }
+                    
                     // Only count if there is a recorded working time
                     if ($hoursWorked > 0 || $minutesWorked > 0) {
                         $presentDays++;
@@ -181,38 +186,35 @@ class ManageSalaries extends Page implements HasTable
                             $totalWorkedHours += floor($totalWorkedMinutes / 60);
                             $totalWorkedMinutes %= 60;
                         }
-                        $totalOvertimeHours += $overtimeHours;
-                        $totalOvertimeMinutes += $overtimeMinutes;
-                        if ($totalOvertimeMinutes >= 60) {
-                            $totalOvertimeHours += floor($totalOvertimeMinutes / 60);
-                            $totalOvertimeMinutes %= 60;
-                        }
                     }
+                    
+                    $overtimeHours = $attendance->overtime_hours ?? 0;
+                    $overtimeMinutes = $attendance->overtime_minutes ?? 0;
+                    $totalOvertimeHours += $overtimeHours;
+                    $totalOvertimeMinutes += $overtimeMinutes;
+                    if ($totalOvertimeMinutes >= 60) {
+                        $totalOvertimeHours += floor($totalOvertimeMinutes / 60);
+                        $totalOvertimeMinutes %= 60;
+                    }
+                } else {
+                    // If the employee is absent, count a full 8 hours as late hours.
+                    // $lateHours += 8;
                 }
             }
-
+            
             // Total actual worked hours (including fractional hours)
             $actualWorkedHoursTotal = $totalWorkedHours + ($totalWorkedMinutes / 60);
+            
             // Calculate the hourly rate using the expected hours for the month
             $hourlyRate = $employee->basic_salary / $expectedWorkHours;
 
             // Base salary is calculated based on actual hours worked
             $baseSalary = $actualWorkedHoursTotal * $hourlyRate;
-
+            
             // Overtime calculation remains as before
             $overtimeDuration = 8 / 6;
             $overtimeHourlyRate = $hourlyRate * $overtimeDuration;
             $overtimePay = ($totalOvertimeHours + ($totalOvertimeMinutes / 60)) * $overtimeHourlyRate;
-
-            // Calculate missing hours – these represent the shortfall from the expected hours.
-            $missingHours = max(0, $expectedWorkHours - $actualWorkedHoursTotal);
-            // Allow up to 32 hours (four leave days) without penalty.
-            $excessLateHours = max(0, $missingHours - $allowedLateHours);
-            // Deduct only the excess late hours at the hourly rate.
-            $lateDeduction = $excessLateHours * $hourlyRate;
-
-            // Compute preliminary net salary (base + overtime minus any late deduction)
-            $netSalary = $baseSalary + $overtimePay - $lateDeduction;
 
             // Process advance salary deduction as before
             $existingDeductionLog = DB::table('advance_salary_deductions')
@@ -247,9 +249,12 @@ class ManageSalaries extends Page implements HasTable
                 $deductionAmount = $existingSalary->deduction;
             }
 
-            // Final net salary after subtracting any advance salary deductions
-            $netSalary = $netSalary - $deductionAmount;
+            // Compute preliminary net salary (base + overtime)
+            $netSalary = $baseSalary + $overtimePay;
+            // Final net salary after subtracting any advance salary deductions and adding allowances
+            $netSalary = $netSalary - $deductionAmount + $employee->home_allowance + $employee->medical_allowance + $employee->mobile_allowance;
 
+            // Save the salary data including the new late_hours column
             Salary::updateOrCreate(
                 [
                     'employee_id' => $employee->id,
@@ -263,14 +268,16 @@ class ManageSalaries extends Page implements HasTable
                     'total_overtime_hours' => $totalOvertimeHours,
                     'total_overtime_minutes' => $totalOvertimeMinutes,
                     'deduction' => $deductionAmount,
-                    'net_salary' => $netSalary + $employee->home_allowance + $employee->medical_allowance + $employee->mobile_allowance,
+                    'net_salary' => $netSalary,
+                    'late_hours' => $lateHours, // Saving calculated late hours
                     'home_allowance' => $employee->home_allowance,
                     'medical_allowance' => $employee->medical_allowance,
                     'mobile_allowance' => $employee->mobile_allowance,
-                    'late_deduction' => $lateDeduction,
+                    // 'late_deduction' => $lateDeduction, // if you decide to use it later
                 ]
             );
         }
     }
+
 
 }

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('salaries', function (Blueprint $table) {
-            $table->integer('home_allowance')->default(0)->after('net_salary');
-            $table->integer('home_allowance')->default(0)->after('net_salary');
+            $table->decimal('late_hours', 5, 2)->default(0)->after('net_salary');
+            $table->integer('home_allowance')->default(0)->after('late_hours');
             $table->integer('medical_allowance')->default(0)->after('home_allowance');
             $table->integer('mobile_allowance')->default(0)->after('medical_allowance');
         });
@@ -25,6 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('salaries', function (Blueprint $table) {
+            $table->dropColumn('late_hours');
             $table->dropColumn('home_allowance');
             $table->dropColumn('medical_allowance');
             $table->dropColumn('mobile_allowance');

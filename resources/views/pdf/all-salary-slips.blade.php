@@ -96,7 +96,7 @@
                             </tr>
                             <tr>
                                 <td>Late hours:</td>
-                                <td>0</td>
+                                <td>{{ ($salary->late_hours == 0.00) ? 0 :  $salary->late_hours }}</td>
                             </tr>
                             <tr>
                                 <td>Absents: </td>

@@ -115,15 +115,13 @@ class PrintDocsController extends Controller
 
     public function print_all_salary($month, $year)
     {
-        // Fetch all active employees with their salary for the given month and year
         $employees = Employee::where('status', true)
             ->with(['salaries' => function($query) use ($month, $year) {
                 $query->where('month', $month)
-                      ->where('year', $year);
+                    ->where('year', $year);
             }])
             ->get();
 
-        // For each employee, fetch and map their attendance records
         foreach ($employees as $employee) {
             $employee->attendance_status = Attendance::where('employee_id', $employee->id)
                 ->whereMonth('date', $month)
@@ -133,6 +131,7 @@ class PrintDocsController extends Controller
                     $attendanceDate = $attendance->date instanceof Carbon
                         ? $attendance->date
                         : Carbon::parse($attendance->date);
+
                     return [
                         'date' => $attendanceDate->format('Y-m-d'),
                         'status' => $attendance->status,
@@ -140,17 +139,22 @@ class PrintDocsController extends Controller
                         'overtime_minutes' => $attendance->overtime_minutes ?? 0,
                         'hours_worked' => $attendance->hours_worked ?? 0,
                         'minutes_worked' => $attendance->minutes_worked ?? 0,
+                        'late_hours' => $attendance->late_hours ?? 0,
                     ];
                 });
-            // Calculate absent days based on total days in month minus present days (if salary record exists)
+
             $daysInMonth = Carbon::create($year, $month)->daysInMonth;
             $salary = $employee->salaries->first();
             $employee->absent_days = $salary ? ($daysInMonth - $salary->total_present_days) : 0;
+
+            // **Calculate total late hours in decimal format**
+            $employee->total_late_hours_decimal = round($employee->attendance_status->sum('late_hours_decimal'), 2);
         }
 
-        // Return the view with all employees’ salary slips
         return view('pdf.all-salary-slips', compact('employees', 'month', 'year'));
     }
+
+
 
     public function print_courier_receipt($id) {
         $receipt = CourierReceipt::findOrFail($id);
