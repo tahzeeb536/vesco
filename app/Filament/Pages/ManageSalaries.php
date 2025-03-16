@@ -60,7 +60,7 @@ class ManageSalaries extends Page implements HasTable
                         ->options(function () {
                             $currentYear = now()->year;
                             $years = [];
-                            for ($i = $currentYear; $i >= $currentYear - 10; $i--) {
+                            for ($i = $currentYear; $i >= $currentYear - 20; $i--) {
                                 $years[$i] = $i;
                             }
                             return $years;
