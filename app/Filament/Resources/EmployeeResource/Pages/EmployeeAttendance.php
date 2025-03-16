@@ -5,6 +5,7 @@ namespace App\Filament\Resources\EmployeeResource\Pages;
 use App\Filament\Resources\EmployeeResource;
 use Filament\Resources\Pages\Page;
 use App\Models\Employee;
+use Filament\Actions;
 
 class EmployeeAttendance extends Page
 {
@@ -20,9 +21,7 @@ class EmployeeAttendance extends Page
         // Load the employee (you might consider using route model binding if preferred)
         $this->employee = Employee::findOrFail($record);
 
-        // Retrieve attendance data for the employee.
-        // In a real application, you might have an Attendance model related to Employee.
-        // For this example, we’ll simulate the data with static arrays.
+        
         $this->attendanceData = [
             'days'   => range(1, 30),
             'status' => array_fill(0, 28, 'P'),
@@ -32,5 +31,15 @@ class EmployeeAttendance extends Page
         ];
     }
 
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\Action::make('profile')
+                ->label('Profile')
+                ->url(fn () => EmployeeResource::getUrl('view', ['record' => $this->employee->id]))
+                ->color('primary'),
+        ];
+    }
 
 }

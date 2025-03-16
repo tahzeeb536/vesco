@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Resources\Pages\ViewRecord;
 use App\Models\AdvanceSalary;
 use App\Models\AdvanceSalaryBalance;
+use App\Filament\Resources\EmployeeResource\Pages\EmployeeAttendance;
 
 class ViewEmployee extends ViewRecord
 {
@@ -16,6 +17,8 @@ class ViewEmployee extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('Attendance')
+                ->url(fn () => EmployeeResource::getUrl('attendance', ['record' => $this->record->id])),
             Actions\Action::make('Update Monthly Deduction')
                 ->form([
                     Forms\Components\TextInput::make('monthly_deduction')
