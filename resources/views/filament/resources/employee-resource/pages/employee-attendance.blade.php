@@ -4,203 +4,95 @@
             {{ $action }}
         @endforeach
     </x-slot>    
-<style>
-    .table-wrapper {
-        overflow-x: scroll;
-    }
+    
+    <style>
+        .table-wrapper {
+            overflow-x: scroll;
+        }
+        table {
+            font-size: 14px;
+        }
+        table td, table th {
+            border: 1px solid gray;
+            padding: 10px;
+        }
+        .btn-get_data {
+            margin-left: 5px;
+            background: lightgray;
+            padding: 9px 15px;
+            border-radius: 5px;
+        }
+    </style>
 
-    table {
-        font-size: 14px;
-    }
+    <!-- Filter Form -->
+    <form method="GET" action="">
+        <label for="month">Month:</label>
+        <select name="month" id="month">
+            @foreach(range(1, 12) as $month)
+                <option value="{{ $month }}" {{ $month == $this->selectedMonth ? 'selected' : '' }}>
+                    {{ DateTime::createFromFormat('!m', $month)->format('F') }}
+                </option>
+            @endforeach
+        </select>
+        <label for="year">Year:</label>
+        <input type="number" name="year" id="year" value="{{ $this->selectedYear }}">
+        <button type="submit" class="btn-get_data">Get Data</button>
+    </form>
 
-    table td, table th {
-        border: 1px solid gray;
-        padding: 5px;
-    }
-
-</style>
-<div class="table-wrapper">
-    <form action=""></form>
-    <table class="table table-bordered table-striped" style>
-        <tbody>
-            <tr>
-                <th>Days</th>
-                <th class="text-center">Sat<br>1</th>
-                <th class="text-center">Sun<br>2</th>
-                <th class="text-center">Mon<br>3</th>
-                <th class="text-center">Tue<br>4</th>
-                <th class="text-center">Wed<br>5</th>
-                <th class="text-center">Thu<br>6</th>
-                <th class="text-center">Fri<br>7</th>
-                <th class="text-center">Sat<br>8</th>
-                <th class="text-center">Sun<br>9</th>
-                <th class="text-center">Mon<br>10</th>
-                <th class="text-center">Tue<br>11</th>
-                <th class="text-center">Wed<br>12</th>
-                <th class="text-center">Thu<br>13</th>
-                <th class="text-center">Fri<br>14</th>
-                <th class="text-center">Sat<br>15</th>
-                <th class="text-center">Sun<br>16</th>
-                <th class="text-center">Mon<br>17</th>
-                <th class="text-center">Tue<br>18</th>
-                <th class="text-center">Wed<br>19</th>
-                <th class="text-center">Thu<br>20</th>
-                <th class="text-center">Fri<br>21</th>
-                <th class="text-center">Sat<br>22</th>
-                <th class="text-center">Sun<br>23</th>
-                <th class="text-center">Mon<br>24</th>
-                <th class="text-center">Tue<br>25</th>
-                <th class="text-center">Wed<br>26</th>
-                <th class="text-center">Thu<br>27</th>
-                <th class="text-center">Fri<br>28</th>
-                <th class="text-center">Sat<br>29</th>
-                <th class="text-center">Sun<br>30</th>
-                <th class="text-center">Mon<br>31</th>
-            </tr>
-            <tr>
-                <td><strong>Status</strong></td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-            </tr>
-            <tr>
-                <td><strong>Hours</strong></td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-            </tr>
-            <tr>
-                <td><strong>Late</strong></td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-            </tr>
-            <tr>
-                <td><strong>O.T</strong></td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-                <td class="text-center">0</td>
-            </tr>
-            <tr>
-                <td colspan="32">
-                    <strong>Absents:</strong> 0 <strong>Leaves:</strong> 0 <strong>Presents:</strong>31 <strong>Total
-                        Hours:</strong>0 <strong>Overtime:</strong>0
-                    <strong>Total Late Hours: 0</strong>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+    <!-- Attendance Table -->
+    <div class="table-wrapper">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Days</th> {{-- Header for column label --}}
+                    @foreach ($attendanceData['dayNames'] as $dayName)
+                        <th>{{ $dayName }}</th>
+                    @endforeach
+                </tr>
+                <tr>
+                    <th></th> {{-- Empty cell for alignment --}}
+                    @foreach ($attendanceData['days'] as $day)
+                        <th>{{ $day }}</th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Status</strong></td>
+                    @foreach ($attendanceData['status'] as $status)
+                        <td class="text-center">{{ ($status == 'Present') ? 'P' : 'A' }}</td>
+                    @endforeach
+                </tr>
+                <tr>
+                    <td><strong>Hours</strong></td>
+                    @foreach ($attendanceData['hours'] as $hour)
+                        <td class="text-center">{{ $hour }}</td>
+                    @endforeach
+                </tr>
+                <tr>
+                    <td><strong>Late</strong></td>
+                    @foreach ($attendanceData['late'] as $late)
+                        <td class="text-center">{{ $late }}</td>
+                    @endforeach
+                </tr>
+                <tr>
+                    <td><strong>O.T</strong></td>
+                    @foreach ($attendanceData['ot'] as $ot)
+                        <td class="text-center">{{ $ot }}</td>
+                    @endforeach
+                </tr>
+                <tr>
+                    <td colspan="{{ count($attendanceData['days']) + 1 }}">
+                        <!-- Example summary: adjust calculations as needed -->
+                        <strong>Absents:</strong> {{ $attendanceData['absentCount']}} 
+                        <strong>Leaves:</strong> 0 
+                        <strong>Presents:</strong> {{ count($attendanceData['days']) }} 
+                        <strong>Total Hours:</strong> {{ array_sum($attendanceData['hours']) }} 
+                        <strong>Overtime:</strong> {{ array_sum($attendanceData['ot']) }}
+                        <strong>Total Late Hours:</strong> {{ array_sum($attendanceData['late']) }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </x-filament-panels::page>
