@@ -22,10 +22,21 @@
             padding: 9px 15px;
             border-radius: 5px;
         }
+        #employee_salar_month {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        @media screen and (min-width: 650px) {
+            #employee_salar_month {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
     </style>
 
     <!-- Filter Form -->
-    <form method="GET" action="">
+    <form method="GET" action="" id="employee_salar_month">
         <label for="month">Month:</label>
         <select name="month" id="month">
             @foreach(range(1, 12) as $month)
