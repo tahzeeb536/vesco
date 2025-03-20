@@ -11,7 +11,7 @@ class AdvanceSalary extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employee_id', 'amount', 'advance_date', 'remarks'
+        'employee_id', 'amount', 'advance_date', 'name', 'remarks'
     ];
 
     public function employee(): BelongsTo {
