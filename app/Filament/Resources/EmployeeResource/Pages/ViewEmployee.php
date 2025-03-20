@@ -39,7 +39,8 @@ class ViewEmployee extends ViewRecord
                     $balance->update([
                         'monthly_deduction' => $data['monthly_deduction'],
                     ]);
-                }),
+                })
+                ->label('Update Loand Deduction'),
             Actions\Action::make('Pay Advance')
                 ->form([
                     Forms\Components\TextInput::make('amount')
@@ -50,6 +51,9 @@ class ViewEmployee extends ViewRecord
                         ->numeric()
                         ->required()
                         ->label('Monthly Deduction Amount'),
+                    Forms\Components\TextInput::make('name')
+                        ->label('Name')
+                        ->required(),
                     Forms\Components\Textarea::make('remarks')
                         ->label('Remarks'),
                 ])
@@ -78,7 +82,7 @@ class ViewEmployee extends ViewRecord
                         'monthly_deduction' => $data['monthly_deduction'],
                     ]);
                 })
-                ->label('Pay Advance'),
+                ->label('New Loan'),
             
             Actions\EditAction::make(),
         ];

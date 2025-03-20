@@ -22,7 +22,7 @@ class AdvanceSalaryBalanceWidget extends BaseWidget
         $balance = AdvanceSalaryBalance::where('employee_id', $employeeId)->first();
 
         return [
-            Stat::make('Total Advance Amount', $balance->total_amount ?? 0),
+            Stat::make('Total Loan Amount', $balance->total_amount ?? 0),
 
             Stat::make('Paid Amount', $balance->paid_amount ?? 0),
             
