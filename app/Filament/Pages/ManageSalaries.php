@@ -127,16 +127,16 @@ class ManageSalaries extends Page implements HasTable
                     ->default('-'),
             ])
             ->actions([
-                Tables\Actions\Action::make('view_salary_sheet')
-                    ->label('Print')
-                    ->icon('heroicon-o-printer')
-                    ->color('primary')
-                    ->url(fn (Employee $record) => route('print_salary', [
-                        'id'    => $record->id,
-                        'month' => $selectedMonth,
-                        'year'  => $selectedYear,
-                    ]))
-                    ->openUrlInNewTab(),
+                // Tables\Actions\Action::make('view_salary_sheet')
+                //     ->label('Print')
+                //     ->icon('heroicon-o-printer')
+                //     ->color('primary')
+                //     ->url(fn (Employee $record) => route('print_salary', [
+                //         'id'    => $record->id,
+                //         'month' => $selectedMonth,
+                //         'year'  => $selectedYear,
+                //     ]))
+                //     ->openUrlInNewTab(),
             ])
             ->description("Salaries for: " . Carbon::createFromDate($this->year, $this->month, 1)->format('F Y'))
             ->filters([])

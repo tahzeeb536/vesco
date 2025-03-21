@@ -60,4 +60,8 @@ class Employee extends Model
     public function advance_salary_deductions(): HasMany  {
         return $this->hasMany(AdvanceSalaryDeduction::class, 'employee_id', 'id');
     }
+
+    public function temp_loans() : HasMany {
+        return $this->hasMany(TempLoan::class, 'employee_id', 'id');
+    }
 }
