@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MoveOldDbData extends Command
 {
@@ -597,64 +598,91 @@ class MoveOldDbData extends Command
 
         
 
-        $this->info('Importing attendance data....');
-        $old_attendance = DB::connection('old_db')
-            ->table('employees_attendance')
+        // $this->info('Importing attendance data....');
+        // $old_attendance = DB::connection('old_db')
+        //     ->table('employees_attendance')
+        //     ->get();
+
+        // foreach($old_attendance as $attendance) {
+
+        //     $employee_exists = DB::connection('mysql')->table('employees')->where('id', $attendance->emp_id)->first();
+
+        //     if($employee_exists) {
+        //         $status = $attendance->status;
+        //         if($status == 'P') {
+        //             $status = 'Present';
+        //         }
+        //         elseif($status == 'A') {
+        //             $status = 'Absent';
+        //         }
+        //         else {
+        //             $status = 'Leave';
+        //         }
+
+        //         $h = $attendance->hours;
+        //         $hours = (int) floor($h);
+        //         $minutes = (int) round(($h - $hours) * 60);
+
+        //         $ot = $attendance->overtime;
+        //         $ot_h = (int) floor($ot);
+        //         $ot_m = (int) round(($ot - $ot_h) * 60);
+
+        //         $in_time = trim($attendance->in_time);
+        //         $out_time = trim($attendance->out_time);
+                
+        //         if (!empty($in_time) && !empty($out_time)) {
+        //             $clock_in = \Carbon\Carbon::createFromFormat('g:i A', $in_time)->format('H:i:s');
+        //             $clock_out = \Carbon\Carbon::createFromFormat('g:i A', $out_time)->format('H:i:s');
+        //         }
+        //         else {
+        //             $clock_in = null;
+        //             $clock_out = null;
+        //         }
+
+        //         DB::connection('mysql')
+        //         ->table('attendances')
+        //         ->insert([
+        //             'id' => $attendance->id,
+        //             'employee_id' => $attendance->emp_id,
+        //             'date' => $attendance->date,
+        //             'status' => $status,
+        //             'clock_in' => $clock_in,
+        //             'clock_out' => $clock_out,
+        //             'hours_worked' => $hours,
+        //             'minutes_worked' => $minutes,
+        //             'overtime_hours' => $ot_h,
+        //             'overtime_minutes' => $ot_m,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }
+            
+        // }
+
+        $this->info('Importing loans data....');
+        $old_loans = DB::connection('old_db')
+            ->table('employees_loans')
             ->get();
 
-        foreach($old_attendance as $attendance) {
+        foreach($old_loans as $loan) {
 
-            $employee_exists = DB::connection('mysql')->table('employees')->where('id', $attendance->emp_id)->first();
+            $employee_exists = DB::connection('mysql')->table('employees')->where('id', $loan->employee_id)->first();
 
             if($employee_exists) {
-                $status = $attendance->status;
-                if($status == 'P') {
-                    $status = 'Present';
-                }
-                elseif($status == 'A') {
-                    $status = 'Absent';
-                }
-                else {
-                    $status = 'Leave';
-                }
-
-                $h = $attendance->hours;
-                $hours = (int) floor($h);
-                $minutes = (int) round(($h - $hours) * 60);
-
-                $ot = $attendance->overtime;
-                $ot_h = (int) floor($ot);
-                $ot_m = (int) round(($ot - $ot_h) * 60);
-
-                $in_time = trim($attendance->in_time);
-                $out_time = trim($attendance->out_time);
-                
-                if (!empty($in_time) && !empty($out_time)) {
-                    $clock_in = \Carbon\Carbon::createFromFormat('g:i A', $in_time)->format('H:i:s');
-                    $clock_out = \Carbon\Carbon::createFromFormat('g:i A', $out_time)->format('H:i:s');
-                }
-                else {
-                    $clock_in = null;
-                    $clock_out = null;
-                }
-
                 DB::connection('mysql')
-                ->table('attendances')
+                ->table('advance_salaries')
                 ->insert([
-                    'id' => $attendance->id,
-                    'employee_id' => $attendance->emp_id,
-                    'date' => $attendance->date,
-                    'status' => $status,
-                    'clock_in' => $clock_in,
-                    'clock_out' => $clock_out,
-                    'hours_worked' => $hours,
-                    'minutes_worked' => $minutes,
-                    'overtime_hours' => $ot_h,
-                    'overtime_minutes' => $ot_m,
+                    'id' => $loan->id,
+                    'employee_id' => $loan->employee_id,
+                    'amount' => $loan->amount,
+                    'advance_date' => Carbon::parse($loan->datetime)->format('Y-m-d'),
+                    'name' => $loan->name,
+                    'remarks' => $loan->details,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
             }
+            
             
         }
 

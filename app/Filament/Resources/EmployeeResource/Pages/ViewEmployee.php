@@ -83,8 +83,10 @@ class ViewEmployee extends ViewRecord
                     ]);
                 })
                 ->label('New Loan'),
+                Actions\Action::make('Loan')
+                    ->url(fn () => EmployeeResource::getUrl('laon', ['record' => $this->record->id])),
                 Actions\Action::make('TempAdvance')
-                ->url(fn () => EmployeeResource::getUrl('temp_loan', ['record' => $this->record->id])),
+                    ->url(fn () => EmployeeResource::getUrl('temp_loan', ['record' => $this->record->id])),
                 Actions\EditAction::make(),
         ];
     }

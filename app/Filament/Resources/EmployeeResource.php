@@ -166,6 +166,7 @@ class EmployeeResource extends Resource
             'edit' => Pages\EditEmployee::route('/{record}/edit'),
             'attendance' => Pages\EmployeeAttendance::route('/{record}/attendance'),
             'temp_loan' => Pages\TempLoans::route('/{record}/temp_loan'),
+            'laon' => Pages\EmployeeLoans::route('/{record}/loan'),
         ];
     }
 }
