@@ -12,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Notifications\Notification;
+use Filament\Actions;
 
 class TempLoans extends Page implements Tables\Contracts\HasTable
 {
@@ -108,6 +109,20 @@ class TempLoans extends Page implements Tables\Contracts\HasTable
                         ->success()
                         ->send();
                 }),
+        ];
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\Action::make('profile')
+                ->label('Profile')
+                ->url(fn () => EmployeeResource::getUrl('view', ['record' => $this->record->id]))
+                ->color('primary'),
+            Actions\Action::make('Attendance')
+                ->url(fn () => EmployeeResource::getUrl('attendance', ['record' => $this->record->id])),
+            Actions\Action::make('Loans')
+                ->url(fn () => EmployeeResource::getUrl('laon', ['record' => $this->record->id])),
         ];
     }
 }

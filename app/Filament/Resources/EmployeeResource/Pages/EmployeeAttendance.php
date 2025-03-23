@@ -89,6 +89,10 @@ class EmployeeAttendance extends Page
                 ->label('Profile')
                 ->url(fn () => EmployeeResource::getUrl('view', ['record' => $this->employee->id]))
                 ->color('primary'),
+            Actions\Action::make('Loans')
+                ->url(fn () => EmployeeResource::getUrl('laon', ['record' => $this->employee->id])),
+            Actions\Action::make('TempAdvance')
+                ->url(fn () => EmployeeResource::getUrl('temp_loan', ['record' => $this->employee->id])),
         ];
     }
 }
