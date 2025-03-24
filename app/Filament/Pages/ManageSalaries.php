@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use App\Models\Employee;
 use App\Models\Salary;
+use App\Models\TempLoan;
 use App\Models\Attendance;
 use App\Models\AdvanceSalaryBalance;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +81,7 @@ class ManageSalaries extends Page implements HasTable
                 }),
             // New Print All Salary Slips action
             Action::make('print_all')
-                ->label('Print All Salary Slips')
+                ->label('Print Salary Slips')
                 ->icon('heroicon-o-printer')
                 ->url(fn () => route('print_all_salary', [
                     'month' => $this->month ?? now()->format('m'),
@@ -248,6 +249,13 @@ class ManageSalaries extends Page implements HasTable
             } else {
                 $deductionAmount = $existingSalary->deduction;
             }
+
+            $tempLoanTotal = TempLoan::where('employee_id', $employee->id)
+                ->whereMonth('date', $this->month)
+                ->whereYear('date', $this->year)
+                ->sum('amount');
+
+            $deductionAmount += $tempLoanTotal;
 
             // Compute preliminary net salary (base + overtime)
             $netSalary = $baseSalary + $overtimePay;
