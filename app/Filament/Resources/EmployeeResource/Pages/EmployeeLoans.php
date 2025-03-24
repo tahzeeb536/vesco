@@ -107,7 +107,15 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
                 ->modalHeading('Edit Loan')
                 ->modalButton('Update'),
             
-            Tables\Actions\DeleteAction::make(),
+            Tables\Actions\DeleteAction::make()
+                ->before(function (AdvanceSalary $record) {
+                    $balance = $record->employee->advance_salary_balance;
+            
+                    if ($balance) {
+                        $balance->decrement('total_amount', $record->amount);
+                        $balance->decrement('remaining_amount', $record->amount);
+                    }
+                }),
         ];
     }
 
@@ -133,6 +141,7 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
                 ->action(function (array $data) {
                     // Create a new Advance Salary record
                     $this->record->advance_salaries()->create([
+                        'name' => $data['name'],
                         'amount' => $data['amount'],
                         'advance_date' => now(),
                         'remarks' => $data['remarks'],
