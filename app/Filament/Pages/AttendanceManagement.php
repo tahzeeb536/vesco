@@ -27,27 +27,63 @@ class AttendanceManagement extends Page implements HasTable
 
     public $selectedEmployeeId;
     public $selectedDate;
+    public $attendances = [];
+
 
     public function mount()
     {
         $this->selectedDate = now()->format('Y-m-d');
+        $this->loadAttendanceData();
     }
 
-    protected function getHeaderActions(): array
+    public function loadAttendanceData()
     {
-        return [
-            Action::make('date')
-                ->label('Select Date')
-                ->form([
-                    Forms\Components\DatePicker::make('attendance_date')
-                        ->label('Date')
-                        ->rules(['nullable', 'date'])
-                        ->default(now()->format('Y-m-d')),
-                ])
-                ->action(function (array $data) {
-                    $this->selectedDate = $data['attendance_date'] ?? now()->format('Y-m-d');
-                }),
-        ];
+        $this->attendances = Employee::where('status', 1)
+            ->with(['attendance' => function ($query) {
+                $query->where('date', $this->selectedDate);
+            }])
+            ->get()
+            ->map(function ($employee) {
+                $attendance = $employee->attendance->first();
+
+                return [
+                    'employee_id' => $employee->id,
+                    'name' => $employee->name,
+                    'status' => $attendance->status ?? 'Present',
+                    'clock_in' => $attendance->clock_in ?? '08:00',
+                    'clock_out' => $attendance->clock_out ?? '17:00',
+                    'hours_worked' => $attendance->hours_worked ?? 8,
+                    'minutes_worked' => $attendance->minutes_worked ?? 0,
+                    'overtime_hours' => $attendance->overtime_hours ?? 0,
+                    'overtime_minutes' => $attendance->overtime_minutes ?? 0,
+                ];
+            })->toArray();
+    }
+
+    public function saveAllAttendance()
+    {
+        foreach ($this->attendances as $attendanceData) {
+            Attendance::updateOrCreate(
+                [
+                    'employee_id' => $attendanceData['employee_id'],
+                    'date' => $this->selectedDate,
+                ],
+                [
+                    'status' => $attendanceData['status'],
+                    'clock_in' => $attendanceData['clock_in'],
+                    'clock_out' => $attendanceData['clock_out'],
+                    'hours_worked' => $attendanceData['hours_worked'],
+                    'minutes_worked' => $attendanceData['minutes_worked'],
+                    'overtime_hours' => $attendanceData['overtime_hours'],
+                    'overtime_minutes' => $attendanceData['overtime_minutes'],
+                ]
+            );
+        }
+
+        Notification::make()
+            ->title('Attendance Saved for All Employees')
+            ->success()
+            ->send();
     }
 
 
