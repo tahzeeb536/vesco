@@ -56,6 +56,7 @@ class AttendanceManagement extends Page implements HasTable
                     'minutes_worked' => $attendance->minutes_worked ?? 0,
                     'overtime_hours' => $attendance->overtime_hours ?? 0,
                     'overtime_minutes' => $attendance->overtime_minutes ?? 0,
+                    'saved' => $attendance ? true : false, // Track if already saved
                 ];
             })->toArray();
     }
