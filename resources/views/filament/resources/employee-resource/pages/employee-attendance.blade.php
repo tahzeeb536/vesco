@@ -52,6 +52,9 @@
 
     <!-- Attendance Table -->
     <div class="table-wrapper">
+        <div>
+            <h2>Employee Name: <b>{{ $employee->name }}</b></h2>
+        </div>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>

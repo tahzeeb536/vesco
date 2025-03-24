@@ -44,9 +44,8 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
     protected function getTableColumns(): array
     {
         return [
-            TextColumn::make('id')
-                ->label('ID')
-                ->sortable(),
+            TextColumn::make('employee.name')
+                ->label('Employee'),
             TextColumn::make('advance_date')
                 ->date()
                 ->sortable(),
@@ -89,10 +88,19 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
                     ];
                 })
                 ->action(function (array $data, AdvanceSalary $record): void {
+                    $oldAmount = $record->amount;
                     $record->update($data);
 
+                    $difference = $data['amount'] - $oldAmount;
+
+                    $balance = $record->employee->advance_salary_balance;
+                    if ($balance) {
+                        $balance->increment('total_amount', $difference);
+                        $balance->increment('remaining_amount', $difference);
+                    }
+
                     Notification::make()
-                        ->title('Loan Updated')
+                        ->title('Loan Updated Successfully!')
                         ->success()
                         ->send();
                 })

@@ -49,9 +49,8 @@ class TempLoans extends Page implements Tables\Contracts\HasTable
     protected function getTableColumns(): array
     {
         return [
-            TextColumn::make('id')
-                ->label('ID')
-                ->sortable(),
+            TextColumn::make('employee.name')
+                ->label('Employee Name'),
             TextColumn::make('date')
                 ->date() // formats the date value
                 ->sortable(),
