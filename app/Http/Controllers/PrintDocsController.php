@@ -116,10 +116,13 @@ class PrintDocsController extends Controller
     public function print_all_salary($month, $year)
     {
         $employees = Employee::where('status', true)
-            ->with(['salaries' => function($query) use ($month, $year) {
-                $query->where('month', $month)
-                    ->where('year', $year);
-            }])
+            ->with(
+                ['salaries' => function($query) use ($month, $year) {
+                    $query->where('month', $month)
+                        ->where('year', $year);
+                    }, 
+                    'advance_salary_balance'
+                ])
             ->get();
 
         foreach ($employees as $employee) {

@@ -116,7 +116,7 @@
                             </tr>
                             <tr>
                                 <td class="bt"><strong>Total Earnings</strong>: </td>
-                                <td class="bt" width="100"><strong>{{ $salary ? number_format(($salary->net_salary + $salary->deduction), 2) : 0 }}</strong></td>
+                                <td class="bt" width="100"><strong>{{ $salary ? number_format(($salary->net_salary + $salary->deduction)) : 0 }}</strong></td>
                             </tr>
                         </table>
                     </td>
@@ -124,22 +124,30 @@
                         <table cellspacing="0" cellpadding="5" border="0" width="100%">
                             <tr>
                                 <td>Advance Salary: </td>
-                                <td>{{ $salary ? number_format($salary->deduction, 2) : 0 }}</td>
+                                <td>{{ $salary ? number_format($salary->temp_deduction) : 0 }}</td>
                             </tr>
                             <tr>
                                 <td>Monthly Deductions: </td>
-                                <td width="75">0</td>
+                                <td width="75">{{ $salary ? number_format($salary->loan_deduction) : 0 }}</td>
                             </tr>
                             <tr>
                                 <td class="bt"><strong>Total Deductions</strong>: </td>
-                                <td class="bt" width="100"><strong>{{ $salary ? number_format($salary->deduction, 2) : 0 }}</strong></td>
+                                <td class="bt" width="100"><strong>{{ $salary ? number_format($salary->deduction) : 0 }}</strong></td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>NET SALARY: Rs.{{ $salary ? number_format($salary->net_salary, 2) : 0 }}/-</strong></td>
-                    <td><strong>Current Balance: </strong> 0.00</td>
+                    <td><strong>NET SALARY: Rs.{{ $salary ? number_format($salary->net_salary) : 0 }}/-</strong></td>
+                    <td>
+                        @php
+                            $balance = isset($employee->advance_salary_balance) ? number_format($employee->advance_salary_balance->remaining_amount) : 0;
+                            if($balance > 0) {
+                                $balance = '-' . $balance;
+                            }
+                        @endphp
+                        <strong>Current Balance: </strong>{{ $balance }}
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2">
