@@ -235,12 +235,39 @@ class ManageSalaries extends Page implements HasTable
                     $advanceBalance->save();
                 }
             } else {
-                $deductionAmount = $existingSalary->loan_deduction ?? 0; // Fetch only advance salary deduction
+                if($existingSalary->loan_deduction == 0) {
+                    $advanceBalance = AdvanceSalaryBalance::where('employee_id', $employee->id)->first();
+                    if ($advanceBalance && $advanceBalance->remaining_amount > 0) {
+                        $deductionAmount = min($advanceBalance->monthly_deduction, $advanceBalance->remaining_amount);
+                        DB::table('advance_salary_deductions')->insert([
+                            'employee_id' => $employee->id,
+                            'amount' => $deductionAmount,
+                            'return_date' => Carbon::create($this->year, $this->month, 1)->endOfMonth(),
+                            'remarks' => 'Monthly advance salary deduction',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                        $advanceBalance->paid_amount += $deductionAmount;
+                        $advanceBalance->remaining_amount -= $deductionAmount;
+                        $advanceBalance->save();
+                    }
+                }
+                else {
+                    $deductionAmount = $existingSalary->loan_deduction ?? 0;
+                }
             }
 
             // Fetch temp loan only once per month
             if ($existingSalary) {
-                $tempLoanTotal = $existingSalary->temp_deduction;
+                if($existingSalary->temp_deduction == 0) {
+                    $tempLoanTotal = TempLoan::where('employee_id', $employee->id)
+                        ->whereMonth('date', $this->month)
+                        ->whereYear('date', $this->year)
+                        ->sum('amount');
+                }
+                else {
+                    $tempLoanTotal = $existingSalary->temp_deduction;
+                }
             } else {
                 $tempLoanTotal = TempLoan::where('employee_id', $employee->id)
                     ->whereMonth('date', $this->month)
