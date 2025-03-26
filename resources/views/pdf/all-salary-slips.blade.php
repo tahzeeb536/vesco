@@ -122,10 +122,21 @@
                     </td>
                     <td valign="bottom">
                         <table cellspacing="0" cellpadding="5" border="0" width="100%">
-                            <tr>
-                                <td>Advance Salary: </td>
-                                <td>{{ $salary ? number_format($salary->temp_deduction) : 0 }}</td>
-                            </tr>
+                            @php
+                                $tempLoans = \App\Models\TempLoan::where('employee_id', $employee->id)
+                                    ->whereMonth('date', $month)
+                                    ->whereYear('date', $year)
+                                    ->get();
+                            @endphp
+
+                            @if($tempLoans) 
+                                @foreach($tempLoans as $loan) 
+                                    <tr>
+                                        <td>{{ $loan->date . ' ' . $loan->details }}</td>
+                                        <td>{{ $loan->amount }}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
                             <tr>
                                 <td>Monthly Deductions: </td>
                                 <td width="75">{{ $salary ? number_format($salary->loan_deduction) : 0 }}</td>
