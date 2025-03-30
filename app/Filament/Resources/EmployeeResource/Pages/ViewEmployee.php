@@ -22,6 +22,8 @@ class ViewEmployee extends ViewRecord
                 ->url(fn () => EmployeeResource::getUrl('laon', ['record' => $this->record->id])),
             Actions\Action::make('TempAdvance')
                 ->url(fn () => EmployeeResource::getUrl('temp_loan', ['record' => $this->record->id])),
+            Actions\Action::make('Account Statement')
+                ->url(fn () => EmployeeResource::getUrl('account-statement', ['record' => $this->record->id])),
         ];
     }
 
