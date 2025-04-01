@@ -30,13 +30,14 @@ class ManageSalaries extends Page implements HasTable
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Salaries';
     protected static string $view = 'filament.pages.manage-salaries';
+    public bool $salariesCalculated = false;
 
     public $month;
     public $year;
 
     protected function getHeaderActions(): array
     {
-        return [
+        $actions = [
             Action::make('date')
                 ->label('Select Month and Year')
                 ->form([
@@ -75,12 +76,14 @@ class ManageSalaries extends Page implements HasTable
                     $this->month = $data['month'] ?? now()->format('m');
                     $this->year = $data['year'] ?? now()->year;
                     $this->calculateSalaries();
+                    $this->salariesCalculated = true;
+
                     Notification::make()
                         ->title('Salary Calculations Updated')
                         ->success()
                         ->send();
                 }),
-            // New Print All Salary Slips action
+
             Action::make('print_all')
                 ->label('Print Salary Slips')
                 ->icon('heroicon-o-printer')
@@ -90,7 +93,28 @@ class ManageSalaries extends Page implements HasTable
                 ]))
                 ->openUrlInNewTab(),
         ];
+
+        // Conditionally add "Pay Salaries"
+        if ($this->salariesCalculated && $this->month && $this->year) {
+            $actions[] = Action::make('pay_salaries')
+                ->label('Pay Salaries')
+                ->color('success')
+                ->requiresConfirmation()
+                ->action(function () {
+                    Salary::where('month', $this->month)
+                        ->where('year', $this->year)
+                        ->update(['status' => 1]);
+
+                    Notification::make()
+                        ->title('Salaries marked as paid!')
+                        ->success()
+                        ->send();
+                });
+        }
+
+        return $actions;
     }
+
 
     public function table(Table $table): Table
     {
@@ -407,6 +431,9 @@ class ManageSalaries extends Page implements HasTable
             }
 
         }
+
+        $this->salariesCalculated = true;
+
     }
 
 
