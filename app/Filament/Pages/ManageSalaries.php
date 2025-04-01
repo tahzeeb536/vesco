@@ -8,6 +8,7 @@ use App\Models\Salary;
 use App\Models\TempLoan;
 use App\Models\Attendance;
 use App\Models\AdvanceSalaryBalance;
+use App\Models\AdvanceSalaryDeduction;
 use Illuminate\Support\Facades\DB;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -216,96 +217,195 @@ class ManageSalaries extends Page implements HasTable
                 ->where('year', $this->year)
                 ->first();
 
-            // Process advance salary deduction
-            $deductionAmount = 0;
-            if (!$existingSalary) { // Process deduction only once per month
+            $transaction = null;
+            if($existingSalary) {
+                if($existingSalary->status == 1) {
+                    $transaction = 'paid';
+                }
+                else {
+                    $transaction = 'update';
+                }
+            }
+            else {
+                $transaction = 'create';
+            }
+
+
+            if($transaction == 'create') {
+                
+                // loan deduction
                 $advanceBalance = AdvanceSalaryBalance::where('employee_id', $employee->id)->first();
-                if ($advanceBalance && $advanceBalance->remaining_amount > 0) {
-                    $deductionAmount = min($advanceBalance->monthly_deduction, $advanceBalance->remaining_amount);
-                    DB::table('advance_salary_deductions')->insert([
+                if ($advanceBalance) {
+
+                    if($advanceBalance->remaining_amount > 0) {
+                        $deductionAmount = min($advanceBalance->monthly_deduction, $advanceBalance->remaining_amount);
+                    }
+                    else {
+                        $deductionAmount = 0;
+                    }
+
+                    // if already exists but records not match then we will update
+                    AdvanceSalaryDeduction::create([
                         'employee_id' => $employee->id,
                         'amount' => $deductionAmount,
-                        'return_date' => Carbon::create($this->year, $this->month, 1)->endOfMonth(),
-                        'remarks' => 'Monthly advance salary deduction',
+                        'return_date' => Carbon::today(),
+                        'month' => $this->month,
+                        'year' => $this->year,
+                        'remarks' => 'Monthly advance salary deduction',    
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
-                    $advanceBalance->paid_amount += $deductionAmount;
-                    $advanceBalance->remaining_amount -= $deductionAmount;
-                    $advanceBalance->save();
-                }
-            } else {
-                if($existingSalary->loan_deduction == 0) {
-                    $advanceBalance = AdvanceSalaryBalance::where('employee_id', $employee->id)->first();
-                    if ($advanceBalance && $advanceBalance->remaining_amount > 0) {
-                        $deductionAmount = min($advanceBalance->monthly_deduction, $advanceBalance->remaining_amount);
-                        DB::table('advance_salary_deductions')->insert([
-                            'employee_id' => $employee->id,
-                            'amount' => $deductionAmount,
-                            'return_date' => Carbon::create($this->year, $this->month, 1)->endOfMonth(),
-                            'remarks' => 'Monthly advance salary deduction',
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                        $advanceBalance->paid_amount += $deductionAmount;
-                        $advanceBalance->remaining_amount -= $deductionAmount;
-                        $advanceBalance->save();
-                    }
-                }
-                else {
-                    $deductionAmount = $existingSalary->loan_deduction ?? 0;
-                }
-            }
 
-            // Fetch temp loan only once per month
-            if ($existingSalary) {
-                if($existingSalary->temp_deduction == 0) {
-                    $tempLoanTotal = TempLoan::where('employee_id', $employee->id)
-                        ->whereMonth('date', $this->month)
-                        ->whereYear('date', $this->year)
-                        ->sum('amount');
+                    $advanceBalance->update([
+                        'paid_amount' => $advanceBalance->paid_amount + $deductionAmount,
+                        'remaining_amount'=> $advanceBalance->remaining_amount - $deductionAmount
+                    ]);
+                    
+                    
                 }
                 else {
-                    $tempLoanTotal = $existingSalary->temp_deduction;
+                    $deductionAmount = 0;
                 }
-            } else {
+
+                // temp loan
                 $tempLoanTotal = TempLoan::where('employee_id', $employee->id)
                     ->whereMonth('date', $this->month)
                     ->whereYear('date', $this->year)
                     ->sum('amount');
-            }
 
-            // Total deduction calculation
-            $totalDeduction = $deductionAmount + $tempLoanTotal;
+                // Total deduction calculation
+                $totalDeduction = $deductionAmount + $tempLoanTotal;
 
-            // Compute net salary correctly
-            $netSalary = ($baseSalary + $overtimePay) - $totalDeduction + 
-                        $employee->home_allowance + $employee->medical_allowance + $employee->mobile_allowance;
-
-            // Save salary to database
-            Salary::updateOrCreate(
-                [
+                // Compute net salary correctly
+                $netSalary = ($baseSalary + $overtimePay) - $totalDeduction + $employee->home_allowance + $employee->medical_allowance + $employee->mobile_allowance;
+                
+                Salary::create([
                     'employee_id' => $employee->id,
                     'month' => $this->month,
                     'year' => $this->year,
-                ],
-                [
                     'total_present_days' => $presentDays,
                     'total_hours' => $totalWorkedHours,
                     'total_minutes' => $totalWorkedMinutes,
                     'total_overtime_hours' => $totalOvertimeHours,
                     'total_overtime_minutes' => $totalOvertimeMinutes,
                     'basic_salary' => $baseSalary,
-                    'deduction' => $totalDeduction, // Includes advance salary + temp loan
-                    'loan_deduction' => $deductionAmount, // Only advance salary deduction
-                    'temp_deduction' => $tempLoanTotal, // Only temp loan deduction
+                    'deduction' => $totalDeduction,
+                    'loan_deduction' => $deductionAmount,
+                    'temp_deduction' => $tempLoanTotal,
                     'net_salary' => $netSalary,
                     'late_hours' => $lateHours,
                     'home_allowance' => $employee->home_allowance,
                     'medical_allowance' => $employee->medical_allowance,
                     'mobile_allowance' => $employee->mobile_allowance,
-                ]
-            );
+                ]);
+
+            }
+            elseif ($transaction == 'update') {
+
+                $advanceBalance = AdvanceSalaryBalance::where('employee_id', $employee->id)->first();
+            
+                if ($advanceBalance) {
+                    // Get the expected monthly deduction from the balance record
+                    $monthlyDeduction = $advanceBalance->monthly_deduction ?? 0;
+            
+                    // Get the single deduction record for the current month and year
+                    $loanDeduction = AdvanceSalaryDeduction::where('employee_id', $employee->id)
+                        ->where('month', $this->month)
+                        ->where('year', $this->year)
+                        ->first();
+            
+                    if ($loanDeduction) {
+                        // If a record exists, check if its amount matches the monthly deduction
+                        $currentDeduction = $loanDeduction->amount;
+                        if ($currentDeduction != $monthlyDeduction) {
+                            $difference = $monthlyDeduction - $currentDeduction;
+                            
+                            // Update the deduction record with the expected monthly deduction
+                            $loanDeduction->update([
+                                'amount'      => $monthlyDeduction,
+                                'return_date' => Carbon::today(),
+                            ]);
+            
+                            // Update the balance accordingly:
+                            // Increase paid_amount if the new deduction is higher; or decrease if lower.
+                            $advanceBalance->update([
+                                'paid_amount'     => $advanceBalance->paid_amount + $difference,
+                                'remaining_amount'=> $advanceBalance->remaining_amount - $difference,
+                            ]);
+                        }
+                        // Set deduction amount to be used in salary calculation
+                        $deductionAmount = $monthlyDeduction;
+                    } else {
+                        // If no record exists, create one with the monthly deduction amount
+                        AdvanceSalaryDeduction::create([
+                            'employee_id' => $employee->id,
+                            'amount'      => $monthlyDeduction,
+                            'return_date' => Carbon::today(),
+                            'month'       => $this->month,
+                            'year'        => $this->year,
+                            'remarks'     => 'Monthly advance salary deduction',
+                            'created_at'  => now(),
+                            'updated_at'  => now(),
+                        ]);
+            
+                        // Update the balance with the full monthly deduction amount
+                        $advanceBalance->update([
+                            'paid_amount'     => $advanceBalance->paid_amount + $monthlyDeduction,
+                            'remaining_amount'=> $advanceBalance->remaining_amount - $monthlyDeduction,
+                        ]);
+                        $deductionAmount = $monthlyDeduction;
+                    }
+                } else {
+                    $deductionAmount = 0;
+                }
+            
+                // Handle temporary loan deductions as before
+                $tempLoanTotal = TempLoan::where('employee_id', $employee->id)
+                    ->whereMonth('date', $this->month)
+                    ->whereYear('date', $this->year)
+                    ->sum('amount');
+            
+                // Calculate the total deduction
+                $totalDeduction = $deductionAmount + $tempLoanTotal;
+            
+                // Compute net salary
+                $netSalary = ($baseSalary + $overtimePay)
+                    - $totalDeduction
+                    + $employee->home_allowance
+                    + $employee->medical_allowance
+                    + $employee->mobile_allowance;
+            
+                // Update the existing salary record with the recalculated values
+                $existingSalary->update([
+                    'total_present_days'    => $presentDays,
+                    'total_hours'           => $totalWorkedHours,
+                    'total_minutes'         => $totalWorkedMinutes,
+                    'total_overtime_hours'  => $totalOvertimeHours,
+                    'total_overtime_minutes'=> $totalOvertimeMinutes,
+                    'basic_salary'          => $baseSalary,
+                    'deduction'             => $totalDeduction,
+                    'loan_deduction'        => $deductionAmount,
+                    'temp_deduction'        => $tempLoanTotal,
+                    'net_salary'            => $netSalary,
+                    'late_hours'            => $lateHours,
+                    'home_allowance'        => $employee->home_allowance,
+                    'medical_allowance'     => $employee->medical_allowance,
+                    'mobile_allowance'      => $employee->mobile_allowance,
+                ]);
+            }                                
+            else {
+                
+                // loan deduction
+                $deductionAmount = $existingSalary->loan_deduction;
+                // temp loan
+                $tempLoanTotal = $existingSalary->temp_deduction;
+                // Total deduction calculation
+                $totalDeduction = $existingSalary->deduction;
+                // Compute net salary correctly
+                $netSalary = $existingSalary->net_salary;
+
+            }
+
         }
     }
 

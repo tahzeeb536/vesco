@@ -10,7 +10,7 @@ class AdvanceSalaryDeduction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employee_id', 'amount', 'return_date', 'remarks'
+        'employee_id', 'amount', 'return_date', 'month', 'year', 'remarks'
     ];
 
     public function employee(): BelongsTo {
