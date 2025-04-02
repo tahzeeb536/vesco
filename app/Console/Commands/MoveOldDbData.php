@@ -659,31 +659,135 @@ class MoveOldDbData extends Command
             
         // }
 
-        $this->info('Importing loans data....');
-        $old_loans = DB::connection('old_db')
-            ->table('employees_loans')
+        // $this->info('Importing loans data....');
+        // $old_loans = DB::connection('old_db')
+        //     ->table('employees_loans')
+        //     ->get();
+
+        // foreach($old_loans as $loan) {
+
+        //     $employee_exists = DB::connection('mysql')->table('employees')->where('id', $loan->employee_id)->first();
+
+        //     if($employee_exists) {
+        //         DB::connection('mysql')
+        //         ->table('advance_salaries')
+        //         ->insert([
+        //             'id' => $loan->id,
+        //             'employee_id' => $loan->employee_id,
+        //             'amount' => $loan->amount,
+        //             'advance_date' => Carbon::parse($loan->datetime)->format('Y-m-d'),
+        //             'name' => $loan->name,
+        //             'remarks' => $loan->details,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }
+            
+            
+        // }
+
+        // $this->info('Importing temp advance data....');
+        // $old_temp_advance = DB::connection('old_db')
+        //     ->table('employees_advance')
+        //     ->get();
+
+        // foreach($old_temp_advance as $advance) {
+
+        //     $employee_exists = DB::connection('mysql')->table('employees')->where('id', $advance->emp_id)->first();
+
+        //     if($employee_exists) {
+        //         DB::connection('mysql')
+        //         ->table('temp_loans')
+        //         ->insert([
+        //             'id' => $advance->adv_id,
+        //             'employee_id' => $advance->emp_id,
+        //             'date' => Carbon::parse($advance->date)->format('Y-m-d'),
+        //             'details' => $advance->details,
+        //             'amount' => $advance->amount,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }    
+        // }
+
+        // $this->info('Importing employee account statement data....');
+        // $old_statement = DB::connection('old_db')
+        //     ->table('employees_statement')
+        //     ->get();
+
+        // foreach($old_statement as $statement) {
+
+        //     $employee_exists = DB::connection('mysql')->table('employees')->where('id', $statement->employee_id)->first();
+            
+        //     if($employee_exists) {
+
+        //         $year = null;
+        //         $month = null;
+        //         if (!empty($statement->month)) {
+        //             list($year, $month) = explode('-', $statement->month);
+        //         }
+
+        //         DB::connection('mysql')
+        //         ->table('employee_statements')
+        //         ->insert([
+        //             'id' => $statement->id,
+        //             'employee_id' => $statement->employee_id,
+        //             'datetime' => Carbon::parse($statement->datetime)->format('Y-m-d H:i:s'),
+        //             'deposit' => $statement->deposit,
+        //             'withdraw' => $statement->withdraw,
+        //             'type' => $statement->type,
+        //             'year' => $year,
+        //             'month' => $month,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }    
+        // }
+
+        $this->info('Importing salaries data....');
+        $salaries = DB::connection('old_db')
+            ->table('salary_sheets')
             ->get();
 
-        foreach($old_loans as $loan) {
+        foreach($salaries as $salary) {
 
-            $employee_exists = DB::connection('mysql')->table('employees')->where('id', $loan->employee_id)->first();
-
+            $employee_exists = DB::connection('mysql')->table('employees')->where('id', $salary->emp_id)->first();
+            
             if($employee_exists) {
+
+                $year = null;
+                $month = null;
+                if (!empty($salary->month)) {
+                    list($year, $month) = explode('-', $salary->month);
+                }
+
                 DB::connection('mysql')
-                ->table('advance_salaries')
+                ->table('salaries')
                 ->insert([
-                    'id' => $loan->id,
-                    'employee_id' => $loan->employee_id,
-                    'amount' => $loan->amount,
-                    'advance_date' => Carbon::parse($loan->datetime)->format('Y-m-d'),
-                    'name' => $loan->name,
-                    'remarks' => $loan->details,
+                    'id' => $salary->id,
+                    'employee_id' => $salary->emp_id,
+                    'month' => $month,
+                    'year' => $year,
+                    'total_present_days' => 0,
+                    'total_hours' => 0,
+                    'total_minutes' => 0,
+                    'total_overtime_hours' => 0,
+                    'total_overtime_minutes' => 0,
+                    'basic_salary' => round($salary->basic_salary),
+                    'overtime' => 0,
+                    'deduction' => $salary->monthly_deduction + $salary->advance,
+                    'loan_deduction' => $salary->monthly_deduction,
+                    'temp_deduction' => $salary->advance,
+                    'net_salary' => round($salary->final_amount),
+                    'late_hours' => 0,
+                    'home_allowance' => $salary->home_allowance,
+                    'medical_allowance' => $salary->medical_allowance,
+                    'mobile_allowance' => $salary->mobile_allowance,
+                    'status' => 1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-            }
-            
-            
+            }    
         }
 
 
