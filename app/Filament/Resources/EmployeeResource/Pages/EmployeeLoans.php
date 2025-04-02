@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Notifications\Notification;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Actions;
+use Filament\Tables\Actions as TableAction;
 
 class EmployeeLoans extends Page implements Tables\Contracts\HasTable
 {
@@ -36,9 +37,97 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
         return 'Employee Loans';
     }
 
+    protected function getTableHeaderActions(): array 
+    {
+        return [
+            TableAction\Action::make('Pay Advance')
+                ->form([
+                    Forms\Components\TextInput::make('amount')
+                        ->numeric()
+                        ->required()
+                        ->label('Amount'),
+                    Forms\Components\TextInput::make('monthly_deduction')
+                        ->numeric()
+                        ->required()
+                        ->label('Monthly Deduction Amount'),
+                    Forms\Components\TextInput::make('name')
+                        ->label('Name')
+                        ->required(),
+                    Forms\Components\Textarea::make('remarks')
+                        ->label('Remarks'),
+                ])
+                ->action(function (array $data) {
+                    // Create a new Advance Salary record
+                    $this->record->advance_salaries()->create([
+                        'name' => $data['name'],
+                        'amount' => $data['amount'],
+                        'advance_date' => now(),
+                        'remarks' => $data['remarks'],
+                    ]);
+
+                    // Update Advance Salary Balance
+                    $balance = $this->record->advance_salary_balance;
+                    if (!$balance) {
+                        $balance = $this->record->advance_salary_balance()->create([
+                            'total_amount' => 0,
+                            'paid_amount' => 0,
+                            'monthly_deduction' => 0,
+                            'remaining_amount' => 0,
+                        ]);
+                    }
+
+                    $balance->increment('total_amount', $data['amount']);
+                    $balance->increment('remaining_amount', $data['amount']);
+                    $balance->update([
+                        'monthly_deduction' => $data['monthly_deduction'],
+                    ]);
+
+                    // Add employee statement entry
+                    $this->record->employee_statements()->create([
+                        'datetime' => now(),
+                        'details' => 'LOAN: ' . $data['name'],
+                        'deposit' => 0,
+                        'withdraw' => $data['amount'],
+                        'type' => 'LOAN',
+                        'year' => null,
+                        'month' => null,
+                    ]);
+                })
+                ->label('New Loan'),
+            TableAction\Action::make('Update Monthly Deduction')
+                ->form([
+                    Forms\Components\TextInput::make('monthly_deduction')
+                        ->numeric()
+                        ->required()
+                        ->label('Monthly Deduction Amount'),
+                ])
+                ->action(function(array $data) {
+                    $balance = $this->record->advance_salary_balance;
+                    if (!$balance) {
+                        $balance = $this->record->advance_salary_balance()->create([
+                            'total_amount' => 0,
+                            'paid_amount' => 0,
+                            'monthly_deduction' => 0,
+                            'remaining_amount' => 0,
+                        ]);
+                    }
+                    $balance->update([
+                        'monthly_deduction' => $data['monthly_deduction'],
+                    ]);
+                })
+                ->label('Update Monthly Deduction'),
+        
+        ]; 
+    }
+
     protected function getTableQuery(): Builder
     {
         return AdvanceSalary::query()->where('employee_id', $this->record->id);
+    }
+
+    protected function getTableDescription(): ?string
+    {
+        return "Loans of: " . $this->record->name;
     }
 
     protected function getTableColumns(): array
@@ -122,82 +211,6 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('Pay Advance')
-                ->form([
-                    Forms\Components\TextInput::make('amount')
-                        ->numeric()
-                        ->required()
-                        ->label('Amount'),
-                    Forms\Components\TextInput::make('monthly_deduction')
-                        ->numeric()
-                        ->required()
-                        ->label('Monthly Deduction Amount'),
-                    Forms\Components\TextInput::make('name')
-                        ->label('Name')
-                        ->required(),
-                    Forms\Components\Textarea::make('remarks')
-                        ->label('Remarks'),
-                ])
-                ->action(function (array $data) {
-                    // Create a new Advance Salary record
-                    $this->record->advance_salaries()->create([
-                        'name' => $data['name'],
-                        'amount' => $data['amount'],
-                        'advance_date' => now(),
-                        'remarks' => $data['remarks'],
-                    ]);
-
-                    // Update Advance Salary Balance
-                    $balance = $this->record->advance_salary_balance;
-                    if (!$balance) {
-                        $balance = $this->record->advance_salary_balance()->create([
-                            'total_amount' => 0,
-                            'paid_amount' => 0,
-                            'monthly_deduction' => 0,
-                            'remaining_amount' => 0,
-                        ]);
-                    }
-
-                    $balance->increment('total_amount', $data['amount']);
-                    $balance->increment('remaining_amount', $data['amount']);
-                    $balance->update([
-                        'monthly_deduction' => $data['monthly_deduction'],
-                    ]);
-
-                    // Add employee statement entry
-                    $this->record->employee_statements()->create([
-                        'datetime' => now(),
-                        'details' => 'LOAN: ' . $data['name'],
-                        'deposit' => 0,
-                        'withdraw' => $data['amount'],
-                        'type' => 'LOAN',
-                        'year' => null,
-                        'month' => null,
-                    ]);
-                })
-                ->label('New Loan'),
-            Actions\Action::make('Update Monthly Deduction')
-                ->form([
-                    Forms\Components\TextInput::make('monthly_deduction')
-                        ->numeric()
-                        ->required()
-                        ->label('Monthly Deduction Amount'),
-                ])
-                ->action(function(array $data) {
-                    $balance = $this->record->advance_salary_balance;
-                    if (!$balance) {
-                        $balance = $this->record->advance_salary_balance()->create([
-                            'total_amount' => 0,
-                            'paid_amount' => 0,
-                            'monthly_deduction' => 0,
-                            'remaining_amount' => 0,
-                        ]);
-                    }
-                    $balance->update([
-                        'monthly_deduction' => $data['monthly_deduction'],
-                    ]);
-                })
-                ->label('Update Monthly Deduction'),
             Actions\Action::make('profile')
                 ->label('Profile')
                 ->url(fn () => EmployeeResource::getUrl('view', ['record' => $this->record->id]))
@@ -207,6 +220,9 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
             
             Actions\Action::make('TempAdvance')
                 ->url(fn () => EmployeeResource::getUrl('temp_loan', ['record' => $this->record->id])),
+            
+            Actions\Action::make('Account Statement')
+                ->url(fn () => EmployeeResource::getUrl('account-statement', ['record' => $this->record->id])),
         ];
     }
 

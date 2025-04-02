@@ -63,6 +63,11 @@ class TempLoans extends Page implements Tables\Contracts\HasTable
         ];
     }
 
+    protected function getTableDescription(): ?string
+    {
+        return "Temp Advance of: " . $this->record->name;
+    }
+
 
     /**
      * Define row actions (edit, delete, etc.) if needed.
@@ -122,6 +127,8 @@ class TempLoans extends Page implements Tables\Contracts\HasTable
                 ->url(fn () => EmployeeResource::getUrl('attendance', ['record' => $this->record->id])),
             Actions\Action::make('Loans')
                 ->url(fn () => EmployeeResource::getUrl('laon', ['record' => $this->record->id])),
+            Actions\Action::make('Account Statement')
+                ->url(fn () => EmployeeResource::getUrl('account-statement', ['record' => $this->record->id])),
         ];
     }
 }

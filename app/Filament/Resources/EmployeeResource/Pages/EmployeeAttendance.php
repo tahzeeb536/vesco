@@ -93,6 +93,8 @@ class EmployeeAttendance extends Page
                 ->url(fn () => EmployeeResource::getUrl('laon', ['record' => $this->employee->id])),
             Actions\Action::make('TempAdvance')
                 ->url(fn () => EmployeeResource::getUrl('temp_loan', ['record' => $this->employee->id])),
+            Actions\Action::make('Account Statement')
+                ->url(fn () => EmployeeResource::getUrl('account-statement', ['record' => $this->employee->id])),
         ];
     }
 }
