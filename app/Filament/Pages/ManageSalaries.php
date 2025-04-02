@@ -489,7 +489,7 @@ class ManageSalaries extends Page implements HasTable
                 
                 if($salaryWithdrawStatement) {
                     $salaryWithdrawStatement->update([
-                        'widthdraw' => $netSalary
+                        'withdraw' => $netSalary
                     ]);
                 }
 

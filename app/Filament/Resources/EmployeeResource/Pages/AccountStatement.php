@@ -22,6 +22,7 @@ class AccountStatement extends Page
             'salaries',
             'advance_salary_deductions',
             'temp_loans',
+            'employee_statements'
         ])->findOrFail($record);
     }
 
