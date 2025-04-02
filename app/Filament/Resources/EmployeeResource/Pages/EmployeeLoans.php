@@ -62,60 +62,60 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
     protected function getTableActions(): array
     {
         return [
-            Tables\Actions\Action::make('edit')
-                ->label('Edit')
-                ->form(function (AdvanceSalary $record) {
-                    return [
-                        Forms\Components\DatePicker::make('advance_date')
-                            ->required()
-                            ->label('Advance Date')
-                            ->default($record->advance_date),
+            // Tables\Actions\Action::make('edit')
+            //     ->label('Edit')
+            //     ->form(function (AdvanceSalary $record) {
+            //         return [
+            //             Forms\Components\DatePicker::make('advance_date')
+            //                 ->required()
+            //                 ->label('Advance Date')
+            //                 ->default($record->advance_date),
 
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->label('Name')
-                            ->default($record->name),
+            //             Forms\Components\TextInput::make('name')
+            //                 ->required()
+            //                 ->label('Name')
+            //                 ->default($record->name),
 
-                        Forms\Components\TextInput::make('remarks')
-                            ->label('Remarks')
-                            ->default($record->remarks),
+            //             Forms\Components\TextInput::make('remarks')
+            //                 ->label('Remarks')
+            //                 ->default($record->remarks),
 
-                        Forms\Components\TextInput::make('amount')
-                            ->numeric()
-                            ->required()
-                            ->label('Amount')
-                            ->default($record->amount),
-                    ];
-                })
-                ->action(function (array $data, AdvanceSalary $record): void {
-                    $oldAmount = $record->amount;
-                    $record->update($data);
+            //             Forms\Components\TextInput::make('amount')
+            //                 ->numeric()
+            //                 ->required()
+            //                 ->label('Amount')
+            //                 ->default($record->amount),
+            //         ];
+            //     })
+            //     ->action(function (array $data, AdvanceSalary $record): void {
+            //         $oldAmount = $record->amount;
+            //         $record->update($data);
 
-                    $difference = $data['amount'] - $oldAmount;
+            //         $difference = $data['amount'] - $oldAmount;
 
-                    $balance = $record->employee->advance_salary_balance;
-                    if ($balance) {
-                        $balance->increment('total_amount', $difference);
-                        $balance->increment('remaining_amount', $difference);
-                    }
+            //         $balance = $record->employee->advance_salary_balance;
+            //         if ($balance) {
+            //             $balance->increment('total_amount', $difference);
+            //             $balance->increment('remaining_amount', $difference);
+            //         }
 
-                    Notification::make()
-                        ->title('Loan Updated Successfully!')
-                        ->success()
-                        ->send();
-                })
-                ->modalHeading('Edit Loan')
-                ->modalButton('Update'),
+            //         Notification::make()
+            //             ->title('Loan Updated Successfully!')
+            //             ->success()
+            //             ->send();
+            //     })
+            //     ->modalHeading('Edit Loan')
+            //     ->modalButton('Update'),
             
-            Tables\Actions\DeleteAction::make()
-                ->before(function (AdvanceSalary $record) {
-                    $balance = $record->employee->advance_salary_balance;
+            // Tables\Actions\DeleteAction::make()
+            //     ->before(function (AdvanceSalary $record) {
+            //         $balance = $record->employee->advance_salary_balance;
             
-                    if ($balance) {
-                        $balance->decrement('total_amount', $record->amount);
-                        $balance->decrement('remaining_amount', $record->amount);
-                    }
-                }),
+            //         if ($balance) {
+            //             $balance->decrement('total_amount', $record->amount);
+            //             $balance->decrement('remaining_amount', $record->amount);
+            //         }
+            //     }),
         ];
     }
 
@@ -162,6 +162,17 @@ class EmployeeLoans extends Page implements Tables\Contracts\HasTable
                     $balance->increment('remaining_amount', $data['amount']);
                     $balance->update([
                         'monthly_deduction' => $data['monthly_deduction'],
+                    ]);
+
+                    // Add employee statement entry
+                    $this->record->employee_statements()->create([
+                        'datetime' => now(),
+                        'details' => 'LOAN: ' . $data['name'],
+                        'deposit' => 0,
+                        'withdraw' => $data['amount'],
+                        'type' => 'LOAN',
+                        'year' => null,
+                        'month' => null,
                     ]);
                 })
                 ->label('New Loan'),

@@ -70,7 +70,7 @@ class TempLoans extends Page implements Tables\Contracts\HasTable
     protected function getTableActions(): array
     {
         return [
-            Tables\Actions\EditAction::make(),
+            // Tables\Actions\EditAction::make(),
             Tables\Actions\DeleteAction::make(),
         ];
     }

@@ -64,4 +64,8 @@ class Employee extends Model
     public function temp_loans() : HasMany {
         return $this->hasMany(TempLoan::class, 'employee_id', 'id');
     }
+
+    public function employee_statements() : HasMany {
+        return $this->hasMany(EmployeeStatement::class, 'employee_id', 'id');
+    }
 }

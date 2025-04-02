@@ -8,6 +8,7 @@ use App\Models\Salary;
 use App\Models\TempLoan;
 use App\Models\Attendance;
 use App\Models\AdvanceSalaryBalance;
+use App\Models\EmployeeStatement;
 use App\Models\AdvanceSalaryDeduction;
 use Illuminate\Support\Facades\DB;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -86,7 +87,6 @@ class ManageSalaries extends Page implements HasTable
 
             Action::make('print_all')
                 ->label('Print Salary Slips')
-                ->icon('heroicon-o-printer')
                 ->url(fn () => route('print_all_salary', [
                     'month' => $this->month ?? now()->format('m'),
                     'year'  => $this->year ?? now()->year,
@@ -303,7 +303,7 @@ class ManageSalaries extends Page implements HasTable
                 // Compute net salary correctly
                 $netSalary = ($baseSalary + $overtimePay) - $totalDeduction + $employee->home_allowance + $employee->medical_allowance + $employee->mobile_allowance;
                 
-                Salary::create([
+                $salary = Salary::create([
                     'employee_id' => $employee->id,
                     'month' => $this->month,
                     'year' => $this->year,
@@ -313,6 +313,7 @@ class ManageSalaries extends Page implements HasTable
                     'total_overtime_hours' => $totalOvertimeHours,
                     'total_overtime_minutes' => $totalOvertimeMinutes,
                     'basic_salary' => $baseSalary,
+                    'overtime' => $overtimePay,
                     'deduction' => $totalDeduction,
                     'loan_deduction' => $deductionAmount,
                     'temp_deduction' => $tempLoanTotal,
@@ -321,6 +322,41 @@ class ManageSalaries extends Page implements HasTable
                     'home_allowance' => $employee->home_allowance,
                     'medical_allowance' => $employee->medical_allowance,
                     'mobile_allowance' => $employee->mobile_allowance,
+                ]);
+
+                EmployeeStatement::create([
+                    'employee_id' => $employee->id,
+                    'datetime' => now(),
+                    'details' => "Salary Deposit for Month {$this->year}-{$this->month}",
+                    'deposit' => $salary->basic_salary + $salary->overtime + $salary->home_allowance + $salary->medical_allowance + $salary->mobile_allowance,
+                    'withdraw' => 0,
+                    'type' => 'SALARY_DEPOSIT',
+                    'month' => $this->month,
+                    'year' => $this->year,
+                ]);
+
+                if ($tempLoanTotal > 0) {
+                    EmployeeStatement::create([
+                        'employee_id' => $employee->id,
+                        'datetime' => now(),
+                        'details' => "Advance deduction for Month {$this->year}-{$this->month}",
+                        'deposit' => 0,
+                        'withdraw' => $tempLoanTotal,
+                        'type' => 'ADV_DEDUCT',
+                        'month' => $this->month,
+                        'year' => $this->year,
+                    ]);
+                }
+
+                EmployeeStatement::create([
+                    'employee_id' => $employee->id,
+                    'datetime' => now(),
+                    'details' => "Salary Paid for month {$this->year}-{$this->month}",
+                    'deposit' => 0,
+                    'withdraw' => $netSalary,
+                    'type' => 'SALARY_WITHDRAW',
+                    'month' => $this->month,
+                    'year' => $this->year,
                 ]);
 
             }
@@ -407,6 +443,7 @@ class ManageSalaries extends Page implements HasTable
                     'total_overtime_hours'  => $totalOvertimeHours,
                     'total_overtime_minutes'=> $totalOvertimeMinutes,
                     'basic_salary'          => $baseSalary,
+                    'overtime'              => $overtimePay,
                     'deduction'             => $totalDeduction,
                     'loan_deduction'        => $deductionAmount,
                     'temp_deduction'        => $tempLoanTotal,
@@ -416,6 +453,46 @@ class ManageSalaries extends Page implements HasTable
                     'medical_allowance'     => $employee->medical_allowance,
                     'mobile_allowance'      => $employee->mobile_allowance,
                 ]);
+
+                // update salary statement
+                $salaryDepositStatement = EmployeeStatement::where('employee_id',  $employee->id)
+                    ->where('year', $this->year)
+                    ->where('month', $this->month)
+                    ->where('type', 'SALARY_DEPOSIT')
+                    ->first();
+                
+                if($salaryDepositStatement) {
+                    $salaryDepositStatement->update([
+                        'deposit' => $baseSalary + $overtimePay + $employee->medical_allowance + $employee->home_allowance + $employee->mobile_allowance
+                    ]);
+                }
+
+                // update temp advance statement
+                $tempAdvStatement = EmployeeStatement::where('employee_id',  $employee->id)
+                    ->where('year', $this->year)
+                    ->where('month', $this->month)
+                    ->where('type', 'ADV_DEDUCT')
+                    ->first();
+                
+                if($tempAdvStatement) {
+                    $tempAdvStatement->update([
+                        'withdraw' => $tempLoanTotal
+                    ]);
+                }
+
+                // update temp advance statement
+                $salaryWithdrawStatement = EmployeeStatement::where('employee_id',  $employee->id)
+                    ->where('year', $this->year)
+                    ->where('month', $this->month)
+                    ->where('type', 'SALARY_WITHDRAW')
+                    ->first();
+                
+                if($salaryWithdrawStatement) {
+                    $salaryWithdrawStatement->update([
+                        'widthdraw' => $netSalary
+                    ]);
+                }
+
             }                                
             else {
                 
