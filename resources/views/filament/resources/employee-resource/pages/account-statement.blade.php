@@ -1,4 +1,4 @@
-<x-filament-panels::page>
+<x-filament::page>
     <div class="space-y-4">
         <h2 class="text-xl font-semibold">Statement of: {{ $record->name }}</h2>
 
@@ -41,4 +41,4 @@
             </tbody>
         </table>
     </div>
-</x-filament-panels::page>
+</x-filament::page>
