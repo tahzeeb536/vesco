@@ -80,7 +80,7 @@ class AccountStatement extends Page
                         $data['deposit'] = 0;
                     }
 
-                    $data['type'] = 'Adjustment';
+                    $data['type'] = $data['transaction_type'];
                     
                     $datetime = Carbon::parse($data['datetime']);
                     $data['month'] = $datetime->month;
