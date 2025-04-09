@@ -401,44 +401,44 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        $this->info('Importing invoices...');
-        $invoices = DB::connection('old_db')
-            ->table('invoice')
-            ->get();
+        // $this->info('Importing invoices...');
+        // $invoices = DB::connection('old_db')
+        //     ->table('invoice')
+        //     ->get();
 
-        foreach ($invoices as $item) {
+        // foreach ($invoices as $item) {
             
-            $customer = DB::connection('mysql')->table('customers')->find($item->customer_id);
+        //     $customer = DB::connection('mysql')->table('customers')->find($item->customer_id);
             
-            if(!$customer) {
-                dump($item);
-                continue;
-            }
-            DB::connection('mysql')->table('sale_invoices')->insert([
-                'id' => $item->id,
-                'customer_id' => $item->customer_id,
-                'invoice_number' => $item->invoice_no,
-                'invoice_date' => $item->date,
-                'ntn' => $item->ntn_no,
-                'financial_instrument_no' => $item->eform_no,
-                'bank_name' => $item->bank,
-                'shipping' => null,
-                'port_of_loading' => null,
-                'port_of_discharge' => null,
-                'term' => $item->term,
-                'hs_code' => $item->hs_code,
-                'po_no' => $item->po_no,
-                'freight_charges' => $item->frieght_charges,
-                'tax_charges' => $item->tax_charges,
-                'total_amount' => null,
-                'paid_amount' => null,
-                'pending_amount' => null,
-                'note' => null,
-                'status' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        //     if(!$customer) {
+        //         dump($item);
+        //         continue;
+        //     }
+        //     DB::connection('mysql')->table('sale_invoices')->insert([
+        //         'id' => $item->id,
+        //         'customer_id' => $item->customer_id,
+        //         'invoice_number' => $item->invoice_no,
+        //         'invoice_date' => $item->date,
+        //         'ntn' => $item->ntn_no,
+        //         'financial_instrument_no' => $item->eform_no,
+        //         'bank_name' => $item->bank,
+        //         'shipping' => null,
+        //         'port_of_loading' => null,
+        //         'port_of_discharge' => null,
+        //         'term' => $item->term,
+        //         'hs_code' => $item->hs_code,
+        //         'po_no' => $item->po_no,
+        //         'freight_charges' => $item->frieght_charges,
+        //         'tax_charges' => $item->tax_charges,
+        //         'total_amount' => null,
+        //         'paid_amount' => null,
+        //         'pending_amount' => null,
+        //         'note' => null,
+        //         'status' => null,
+        //         'created_at' => now(),
+        //         'updated_at' => now(),
+        //     ]);
+        // }
 
 
         // $this->info('Importing invoice items...');
@@ -511,38 +511,6 @@ class MoveOldDbData extends Command
         //             $product_name = $product->name;
         //         }
         //     }
-
-        //     // if($item->prod_id > 0) {
-        //     //     $item_id = $item->prod_id;
-        //     // }
-        //     // else {
-        //     //     $product = DB::connection('mysql')
-        //     //         ->table('products')
-        //     //         ->where('article_number', $item->article_no)
-        //     //         ->first();
-                
-        //     //     if($product) {
-        //     //         $variants = DB::connection('mysql')
-        //     //             ->table('product_variants')
-        //     //             ->where('product_id', $product->id)
-        //     //             ->get();
-        //     //         $variant = '';
-        //     //         if($variants) {
-        //     //             foreach ($variants as $prod) {
-        //     //                 $size = DB::connection('mysql')
-        //     //                     ->table('sizes')
-        //     //                     ->where('name', $item->size)
-        //     //                     ->first();
-        //     //                 if($size) {
-        //     //                     if($prod->name == $item->size) {
-                                    
-        //     //                     }
-        //     //                 }
-        //     //             }
-        //     //         }
-        //     //     }
-                
-        //     // }
             
         //     $total_price = $item->qty * $item->rate;
         //     if ($item->discount > 0) {
@@ -566,6 +534,14 @@ class MoveOldDbData extends Command
         //         'updated_at' => now(),
         //     ]);
         // }
+
+        // $this->info('Save sale invoice total amount');
+        // $sale_invoices = \App\Models\SaleInvoice::all();
+
+        // foreach ($sale_invoices as $invoice) {
+        //     $invoice->updateTotalAmount();
+        // }
+
 
         // $this->info('Importing employees....');
         // $old_employees = DB::connection('old_db')
