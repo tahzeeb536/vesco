@@ -84,4 +84,9 @@ class SaleInvoice extends Model
         }
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(SaleInvoicePayment::class);
+    }
+
 }

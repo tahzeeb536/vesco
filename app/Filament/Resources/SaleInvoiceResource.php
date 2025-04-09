@@ -156,7 +156,7 @@ class SaleInvoiceResource extends Resource
                     ->label('Paid Amount')
                     ->getStateUsing(function ($record) {
                         $currency = $record->customer->currency ?? 'USD';
-                        return number_format($record->total_amount, 2) . ' ' . strtoupper($currency);
+                        return number_format($record->paid_amount, 2) . ' ' . strtoupper($currency) ?? 0;
                     })
                     ->sortable(),
 
@@ -164,7 +164,7 @@ class SaleInvoiceResource extends Resource
                     ->label('Pending Amount')
                     ->getStateUsing(function ($record) {
                         $currency = $record->customer->currency ?? 'USD';
-                        return number_format($record->total_amount, 2) . ' ' . strtoupper($currency);
+                        return number_format($record->pending_amount, 2) . ' ' . strtoupper($currency) ?? 0;
                     })
                     ->sortable(),
 
@@ -198,39 +198,50 @@ class SaleInvoiceResource extends Resource
                         ->requiresConfirmation()
                         ->icon('heroicon-o-banknotes')
                         ->action(function (SaleInvoice $record, array $data) {
-                            $paidAmount = $data['paid_amount'];
-                            $totalAmount = $record->total_amount;
-
-                            if ($paidAmount == $totalAmount) {
-                                $status = 'paid';
-                            } elseif ($paidAmount > 0 && $paidAmount < $totalAmount) {
-                                $status = 'partially_paid';
-                            } else {
-                                $status = 'pending';
-                            }
-
+                            // 1. Create a new payment entry
+                            \App\Models\SaleInvoicePayment::create([
+                                'date' => $data['date'],
+                                'sale_invoice_id' => $record->id,
+                                'amount' => $data['paid_amount'],
+                            ]);
+                    
+                            // 2. Recalculate totals from payments table
+                            $totalPaid = $record->payments()->sum('amount');
+                            $pendingAmount = $record->total_amount - $totalPaid;
+                    
+                            // 3. Update the invoice with correct values
                             $record->update([
-                                'paid_amount' => $data['paid_amount'],
-                                'pending_amount' => $record->total_amount - $data['paid_amount'],
-                                'status' => $status, 
+                                'paid_amount' => $totalPaid,
+                                'pending_amount' => $pendingAmount,
+                                'status' => match (true) {
+                                    $pendingAmount <= 0 => 'paid',
+                                    $totalPaid > 0 => 'partially_paid',
+                                    default => 'pending',
+                                },
                             ]);
                         })
                         ->modalHeading('Pay Invoice')
                         ->form([
+                            Forms\Components\DatePicker::make('date')
+                                ->label('Payment Date')
+                                ->default(now())
+                                ->required(),
+                    
+                            Forms\Components\TextInput::make('paid_amount')
+                                ->label('Payment Amount')
+                                ->required()
+                                ->numeric(),
+                    
                             Forms\Components\TextInput::make('total_amount')
-                                ->label('Total Amount')
+                                ->label('Total Invoice Amount')
                                 ->numeric()
                                 ->readonly(),
-                            Forms\Components\TextInput::make('paid_amount')
-                                ->label('Paid Amount')
-                                ->required()
-                                ->numeric()
                         ])
                         ->mountUsing(function (Forms\ComponentContainer $form, SaleInvoice $record) {
                             $form->fill([
-                                'total_amount'   => $record->total_amount,
-                                'paid_amount'    => $record->paid_amount,
-                                'pending_amount' => $record->total_amount - $record->paid_amount,
+                                'total_amount' => $record->total_amount,
+                                'paid_amount' => 0,
+                                'date' => now(),
                             ]);
                         }),
                     Tables\Actions\ViewAction::make(),
