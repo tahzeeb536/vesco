@@ -24,7 +24,7 @@ class SaleInvoice extends Model
         'term',
         'hs_code',
         'po_no',
-        'frieignt_charges',
+        'freight_charges',
         'tax_charges',
         'total_amount',
         'paid_amount',
@@ -76,7 +76,10 @@ class SaleInvoice extends Model
 
     public function updateTotalAmount()
     {
-        $totalAmount = $this->items()->sum('total_price');
+        $itemsTotal = $this->items()->sum('total_price');
+        $freight = $this->freight_charges ?? 0;
+
+        $totalAmount = $itemsTotal + $freight;
 
         if ($this->total_amount !== $totalAmount) {
             $this->total_amount = $totalAmount;

@@ -542,6 +542,46 @@ class MoveOldDbData extends Command
         //     $invoice->updateTotalAmount();
         // }
 
+        // $this->info('Import sale invoice payments');
+        // $old_inv_payments = DB::connection('old_db')
+        //     ->table('invoice_payments')
+        //     ->get();
+
+        // foreach ($old_inv_payments as $payment) {
+        //     DB::connection('mysql')
+        //         ->table('sale_invoice_payments')
+        //         ->insert([
+        //             'id' => $payment->id,
+        //             'date' => Carbon::parse($payment->date)->format('Y-m-d'),
+        //             'sale_invoice_id' => $payment->inv_id,
+        //             'amount' => $payment->amount,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        // }
+
+
+        // $this->info('Update sale invoice paid and pending amounts');
+        // $sale_invoices = \App\Models\SaleInvoice::with('payments')->get();
+
+        // foreach ($sale_invoices as $invoice) {
+        //     $totalPaid = $invoice->payments->sum('amount');
+        //     $pendingAmount = $invoice->total_amount - $totalPaid;
+    
+        //     $status = match (true) {
+        //         $pendingAmount <= 0 => 'paid',
+        //         $totalPaid > 0 => 'partially_paid',
+        //         default => 'pending',
+        //     };
+    
+        //     $invoice->update([
+        //         'paid_amount' => $totalPaid,
+        //         'pending_amount' => $pendingAmount,
+        //         'status' => $status,
+        //     ]);
+        // }
+
+
 
         // $this->info('Importing employees....');
         // $old_employees = DB::connection('old_db')
