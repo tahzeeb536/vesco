@@ -335,10 +335,47 @@
     				    </td>
     	        </tr>
 
-    				<tr>
-    				    <td colspan="3">
-                                				    </td>
-    	            </tr>
+				@if($saleInvoice->payments->count())
+					<tr>
+						<td colspan="3">
+							<table align="center" width="1000" border="0" cellpadding="0" class="content-block">
+								<tbody>
+									<tr class="new_class">
+										<td>
+											<h3>Payments</h3>
+											<table class="table" width="100%" border="1" cellpadding="5">
+												<thead>
+													<tr>
+														<th width="100">Trans ID.</th>
+														<th width="100">Date</th>
+														<th>Details</th>
+														<th width="100">Amount</th>
+													</tr>
+												</thead>
+												<tbody>
+													@foreach($saleInvoice->payments as $payment)
+													<tr>
+														<td>{{ $payment->id }}</td>
+														<td>{{ $payment->date }}</td>
+														<td><input type="text" style="border:none; padding:0px; margin:0px; font-size: 14px;" value=""></td>
+														<td>{{ $payment->amount }}</td>
+													</tr>
+													@endforeach
+													<tr>
+														<td colspan="3" align="right"><strong>Total Payments:</strong></td>
+														<td><strong>{{ $saleInvoice->payments->sum('amount') }}</strong></td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+				@endif
+
+
 			    </tbody>
 				
 				<tfoot>

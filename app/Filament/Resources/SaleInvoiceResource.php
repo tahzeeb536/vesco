@@ -193,6 +193,10 @@ class SaleInvoiceResource extends Resource
                         ->label('Invoice with Stamp')
                         ->url(fn ($record) => self::print_sale_invoice_with_stamp($record->id))
                         ->openUrlInNewTab(),
+                    Actions\Action::make('share_sale_invoice')
+                        ->label('Share Invoice')
+                        ->url(fn ($record) => self::share_sale_invoice($record->id))
+                        ->openUrlInNewTab(),
                     PopupAction::make('pay_invoice')
                         ->label('Pay Invoice')
                         ->requiresConfirmation()
@@ -280,5 +284,11 @@ class SaleInvoiceResource extends Resource
     protected static function print_sale_invoice_with_stamp($recordId)
     {
         return route('print_sale_invoice_with_stamp', ['record' => $recordId]);
+    }
+
+    protected static function share_sale_invoice($recordId)
+    {
+        $recordId = encrypt($recordId);
+        return route('share_sale_invoice', ['record' => $recordId]);
     }
 }

@@ -59,12 +59,18 @@ class PrintDocsController extends Controller
     }
 
     public function print_sale_invoice($record) {
-        $saleInvoice = SaleInvoice::findOrFail($record);
+        $saleInvoice = SaleInvoice::with('payments')->where('id', $record)->first();
+        return view('pdf.print_sale_invoice', compact('saleInvoice'));
+    }
+
+    public function share_sale_invoice($record) {
+        $decoded = decrypt($record);
+        $saleInvoice = SaleInvoice::with('payments')->where('id', $decoded)->first();
         return view('pdf.print_sale_invoice', compact('saleInvoice'));
     }
 
     public function print_sale_invoice_with_stamp($record) {
-        $saleInvoice = SaleInvoice::findOrFail($record);
+        $saleInvoice = SaleInvoice::with('payments')->where('id', $record)->first();
         return view('pdf.print_sale_invoice_with_stamp', compact('saleInvoice'));
     }
 

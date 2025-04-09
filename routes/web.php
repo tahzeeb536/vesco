@@ -53,6 +53,7 @@ Route::get('/share-packaging-list/{record}', [PrintDocsController::class, 'share
 
 Route::get('/sale-invoice/print-invoice/{record}', [PrintDocsController::class, 'print_sale_invoice'])->name('print_sale_invoice');
 Route::get('/sale-invoice/print-invoice-with-stamp/{record}', [PrintDocsController::class, 'print_sale_invoice_with_stamp'])->name('print_sale_invoice_with_stamp');
+Route::get('/sale-invoice/{record}', [PrintDocsController::class, 'share_sale_invoice'])->name('share_sale_invoice');
 
 Route::get('/salary/print/{id}/{month}/{year}', [PrintDocsController::class, 'print_salary'])->name('print_salary');
 Route::get('/salary/print-salaries/{month}/{year}', [PrintDocsController::class, 'print_all_salary'])->name('print_all_salary');
