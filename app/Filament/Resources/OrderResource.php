@@ -213,6 +213,7 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('order_date')->sortable(),
                 Tables\Columns\TextColumn::make('email_date')->sortable(),

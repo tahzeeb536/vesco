@@ -50,6 +50,7 @@ class LetterHeadResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('title')->label('Title')->limit(50)->searchable(),
                 TextColumn::make('ref_no')->label('Reference #')->sortable()->searchable(),

@@ -156,6 +156,7 @@ class CourierReceiptResource extends Resource
             //     ->select('courier_receipts.*', 'customers.organization as receiver_company_name')
             //     ->join('customers', 'customers.id', '=', 'courier_receipts.receiver_company_name')
             // )
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('date')->sortable(),
                 Tables\Columns\TextColumn::make('receiver_company_name')

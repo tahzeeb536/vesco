@@ -152,6 +152,7 @@ class GrnResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('grn_number')
                     ->label('GRN Number')

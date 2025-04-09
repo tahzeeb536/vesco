@@ -401,44 +401,44 @@ class MoveOldDbData extends Command
         //     ]);
         // }
 
-        // $this->info('Importing invoices...');
-        // $invoices = DB::connection('old_db')
-        //     ->table('invoice')
-        //     ->get();
+        $this->info('Importing invoices...');
+        $invoices = DB::connection('old_db')
+            ->table('invoice')
+            ->get();
 
-        // foreach ($invoices as $item) {
+        foreach ($invoices as $item) {
             
-        //     $customer = DB::connection('mysql')->table('customers')->find($item->customer_id);
+            $customer = DB::connection('mysql')->table('customers')->find($item->customer_id);
             
-        //     if(!$customer) {
-        //         dump($item);
-        //         continue;
-        //     }
-        //     DB::connection('mysql')->table('sale_invoices')->insert([
-        //         'id' => $item->id,
-        //         'customer_id' => $item->customer_id,
-        //         'invoice_number' => $item->invoice_no,
-        //         'invoice_date' => $item->date,
-        //         'ntn' => $item->ntn_no,
-        //         'financial_instrument_no' => $item->eform_no,
-        //         'bank_name' => $item->bank,
-        //         'shipping' => null,
-        //         'port_of_loading' => null,
-        //         'port_of_discharge' => null,
-        //         'term' => $item->term,
-        //         'hs_code' => $item->hs_code,
-        //         'po_no' => $item->po_no,
-        //         'freight_charges' => $item->frieght_charges,
-        //         'tax_charges' => $item->tax_charges,
-        //         'total_amount' => null,
-        //         'paid_amount' => null,
-        //         'pending_amount' => null,
-        //         'note' => null,
-        //         'status' => null,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]);
-        // }
+            if(!$customer) {
+                dump($item);
+                continue;
+            }
+            DB::connection('mysql')->table('sale_invoices')->insert([
+                'id' => $item->id,
+                'customer_id' => $item->customer_id,
+                'invoice_number' => $item->invoice_no,
+                'invoice_date' => $item->date,
+                'ntn' => $item->ntn_no,
+                'financial_instrument_no' => $item->eform_no,
+                'bank_name' => $item->bank,
+                'shipping' => null,
+                'port_of_loading' => null,
+                'port_of_discharge' => null,
+                'term' => $item->term,
+                'hs_code' => $item->hs_code,
+                'po_no' => $item->po_no,
+                'freight_charges' => $item->frieght_charges,
+                'tax_charges' => $item->tax_charges,
+                'total_amount' => null,
+                'paid_amount' => null,
+                'pending_amount' => null,
+                'note' => null,
+                'status' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
 
         // $this->info('Importing invoice items...');
@@ -744,51 +744,51 @@ class MoveOldDbData extends Command
         //     }    
         // }
 
-        $this->info('Importing salaries data....');
-        $salaries = DB::connection('old_db')
-            ->table('salary_sheets')
-            ->get();
+        // $this->info('Importing salaries data....');
+        // $salaries = DB::connection('old_db')
+        //     ->table('salary_sheets')
+        //     ->get();
 
-        foreach($salaries as $salary) {
+        // foreach($salaries as $salary) {
 
-            $employee_exists = DB::connection('mysql')->table('employees')->where('id', $salary->emp_id)->first();
+        //     $employee_exists = DB::connection('mysql')->table('employees')->where('id', $salary->emp_id)->first();
             
-            if($employee_exists) {
+        //     if($employee_exists) {
 
-                $year = null;
-                $month = null;
-                if (!empty($salary->month)) {
-                    list($year, $month) = explode('-', $salary->month);
-                }
+        //         $year = null;
+        //         $month = null;
+        //         if (!empty($salary->month)) {
+        //             list($year, $month) = explode('-', $salary->month);
+        //         }
 
-                DB::connection('mysql')
-                ->table('salaries')
-                ->insert([
-                    'id' => $salary->id,
-                    'employee_id' => $salary->emp_id,
-                    'month' => $month,
-                    'year' => $year,
-                    'total_present_days' => 0,
-                    'total_hours' => 0,
-                    'total_minutes' => 0,
-                    'total_overtime_hours' => 0,
-                    'total_overtime_minutes' => 0,
-                    'basic_salary' => round($salary->basic_salary),
-                    'overtime' => 0,
-                    'deduction' => $salary->monthly_deduction + $salary->advance,
-                    'loan_deduction' => $salary->monthly_deduction,
-                    'temp_deduction' => $salary->advance,
-                    'net_salary' => round($salary->final_amount),
-                    'late_hours' => 0,
-                    'home_allowance' => $salary->home_allowance,
-                    'medical_allowance' => $salary->medical_allowance,
-                    'mobile_allowance' => $salary->mobile_allowance,
-                    'status' => 1,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }    
-        }
+        //         DB::connection('mysql')
+        //         ->table('salaries')
+        //         ->insert([
+        //             'id' => $salary->id,
+        //             'employee_id' => $salary->emp_id,
+        //             'month' => $month,
+        //             'year' => $year,
+        //             'total_present_days' => 0,
+        //             'total_hours' => 0,
+        //             'total_minutes' => 0,
+        //             'total_overtime_hours' => 0,
+        //             'total_overtime_minutes' => 0,
+        //             'basic_salary' => round($salary->basic_salary),
+        //             'overtime' => 0,
+        //             'deduction' => $salary->monthly_deduction + $salary->advance,
+        //             'loan_deduction' => $salary->monthly_deduction,
+        //             'temp_deduction' => $salary->advance,
+        //             'net_salary' => round($salary->final_amount),
+        //             'late_hours' => 0,
+        //             'home_allowance' => $salary->home_allowance,
+        //             'medical_allowance' => $salary->medical_allowance,
+        //             'mobile_allowance' => $salary->mobile_allowance,
+        //             'status' => 1,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }    
+        // }
 
 
     }

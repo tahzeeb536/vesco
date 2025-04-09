@@ -143,6 +143,7 @@ class SaleInvoiceReturnResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('sale_invoice.customer.full_name')
                     ->label('Customer')
