@@ -297,7 +297,7 @@
                                         <td><input class="update rate" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="{{ $item->unit_price }}" /></td>
                                         <td><input class="update discount" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="{{ $item->discount }}%" /></td>
                                         <td><input class="update total" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="{{ $item->total_price }}" /></td>
-                                        <td class="noprint"><button class="btnDelete" data-id="1">X</button></td>
+                                        <td class="noprint"><button class="btnDelete" data-id="{{ $key + 1 }}">X</button></td>
                                     </tr>
                                     @endforeach
                                     
