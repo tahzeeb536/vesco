@@ -14,6 +14,14 @@ class ViewCourierReceipt extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            Actions\Action::make('print_courier_receipt')
+                ->label('Print')
+                ->icon('heroicon-o-printer')
+                ->color('primary')
+                ->url(fn () => route('print_courier_receipt', [
+                    'id' => $this->record->id,
+                ]))
+                ->openUrlInNewTab(),
         ];
     }
 }

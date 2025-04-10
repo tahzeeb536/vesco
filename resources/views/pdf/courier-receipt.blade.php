@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Print Airway Bill # 93106112</title>
+    <title>Print Airway Bill # {{ $receipt->airway_bill_number }}</title>
     <style type="text/css">
         body{
             padding: 0px;
@@ -424,7 +424,7 @@
                 <div class="row">
                     <div class="col">
                         <label for="rcv_company">Receiver Company Name</label>
-                        <input type="text" class="input" id="rcv_company" value="{{ $receiver_company }}">
+                        <input type="text" class="input" id="rcv_company" value="{{ $receipt->receiver_company_name }}">
                     </div>
                 </div>
                 <div class="row">
@@ -497,7 +497,7 @@
                     </tr>
                     <tr>
                         <th class="bb" height="74">DOCUMENT<br><br><br> </th>
-                        <th colspan="5" rowspan="2" class="bl" valign="top"><textarea rows="10" style="width: 100%; height: 100%; min-height:143px;">VIA UK UPS To USA Please do not change our packing.</textarea></th>
+                        <th colspan="5" rowspan="2" class="bl" valign="top"><textarea rows="10" style="width: 100%; height: 100%; min-height:143px;">{{ $receipt->extra_information }}</textarea></th>
                     </tr>
                     <tr>
                         <th height="77">PACKAGE<br><small>(NON DOCUMENT)</small><br><br>  ***** </th>
