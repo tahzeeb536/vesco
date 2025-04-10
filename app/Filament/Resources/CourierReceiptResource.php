@@ -94,8 +94,23 @@ class CourierReceiptResource extends Resource
                                     $query->where('organization', 'like', "%{$search}%");
                                 }
                                 return $query->limit(50)
-                                    ->pluck('organization')
+                                    ->pluck('organization', 'id')
                                     ->toArray();
+                            })
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $customer = Customer::find($state);
+                                    if ($customer) {
+                                        $set('receiver_company_name', $customer->organization);
+                                        $set('receiver_address', $customer->address);
+                                        $set('receiver_city', $customer->city);
+                                        $set('receiver_state', $customer->state);
+                                        $set('receiver_country', $customer->country);
+                                        $set('receiver_zip', $customer->post_code);
+                                        $set('receiver_phone', $customer->phone);
+                                    }
+                                }
                             })
                             ->columnSpan(6),
                         Forms\Components\TextInput::make('receiver_attention_to')
