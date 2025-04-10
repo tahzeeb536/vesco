@@ -226,7 +226,7 @@
 									</div>
 									<div style="display: flex;">
                                     	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 140px;" rows="3"><strong>Invoice:</strong> {{ $saleInvoice->invoice_number }}</div>
-										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:170px;" class="editable"><strong>PO:</strong>PO-123</div>
+										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:170px;" class="editable"><strong>P.O. No:</strong>{{ (!empty($saleInvoice->po_no)) ? $saleInvoice->po_no : 'N/A' }}</div>
 									</div>
 									<div style="display: flex;">
                                     	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 140px;" rows="3"><strong>NTN No:</strong> 2130732-6</div>
