@@ -103,6 +103,7 @@ class CourierReceiptResource extends Resource
                                     $customer = Customer::find($state);
                                     if ($customer) {
                                         $set('receiver_company_name', $customer->organization);
+                                        $set('receiver_attention_to', $customer->full_name);
                                         $set('receiver_address', $customer->address);
                                         $set('receiver_city', $customer->city);
                                         $set('receiver_state', $customer->state);

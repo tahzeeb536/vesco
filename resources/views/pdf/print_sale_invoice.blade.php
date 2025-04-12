@@ -317,16 +317,16 @@
 
                     					</td>
                     					<td colspan="2"><strong>Freight Charges: </strong></td>
-                    					<td><input id="freight_amount" class="update" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="{{ $saleInvoice->freight_charges }} USD"></td>
+                    					<td><input id="freight_amount" class="update" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="{{ $saleInvoice->freight_charges }} {{ $saleInvoice->customer->currency ?? 'USD' }}"></td>
                     				</tr>
                     				<tr>
                     					<td colspan="2"><strong>Bank Charges: </strong></td>
-                    					<td>        <input id="tax_amount" class="update" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="0.00 USD">
+                    					<td>        <input id="tax_amount" class="update" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="0.00  {{ $saleInvoice->customer->currency ?? 'USD' }}">
                                         </td>
                     				</tr>
                     				<tr>
                     					<td colspan="2"><strong>Grand Total: </strong></td>
-                    					<td><input id="final_amount" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="{{ $saleInvoice->items->sum('total_price') + $saleInvoice->tax_charges + $saleInvoice->freight_charges }} USD"></td>
+                    					<td><input id="final_amount" type="text" style="border:none; padding:0px; margin:0px; font-size: 14px; width:100%" value="{{ $saleInvoice->items->sum('total_price') + $saleInvoice->tax_charges + $saleInvoice->freight_charges }}  {{ $saleInvoice->customer->currency ?? 'USD' }}"></td>
                     				</tr>
 
 
