@@ -162,43 +162,46 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                         <!-- Quantity -->
                         <td class="p-0 border border-gray-300" style="width: 12%;">
                             <input type="number"
-                                   class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
-                                   style="outline: none; box-shadow: none;"
-                                   x-model.number="row.quantity"
-                                   min="1"
-                                   @input="calculateTotal(row)"
-                                   @keydown.enter.prevent="addRow()" />
+                                class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
+                                style="outline: none; box-shadow: none;"
+                                x-model.number="row.quantity"
+                                min="1"
+                                @input="calculateTotal(row)"
+                                @keydown.enter.prevent="addRow()" />
                         </td>
 
                         <!-- Unit Price -->
                         <td class="p-0 border border-gray-300" style="width: 12%;">
                             <input type="number"
-                                   class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
-                                   style="outline: none; box-shadow: none;"
-                                   x-model.number="row.unit_price"
-                                   min="0"
-                                   step="any"
-                                   @input="calculateTotal(row)" />
+                                class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
+                                style="outline: none; box-shadow: none;"
+                                x-model.number="row.unit_price"
+                                min="0"
+                                step="any"
+                                @input="calculateTotal(row)"
+                                @keydown.enter.prevent="addRow()" />
                         </td>
 
                         <!-- Disount -->
                         <td class="p-0 border border-gray-300" style="width: 12%;">
                             <input type="number"
-                                   class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
-                                   style="outline: none; box-shadow: none;"
-                                   x-model.number="row.discount"
-                                   min="0"
-                                   step="any"
-                                   @input="calculateTotal(row)" />
+                                class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
+                                style="outline: none; box-shadow: none;"
+                                x-model.number="row.discount"
+                                min="0"
+                                step="any"
+                                @input="calculateTotal(row)"
+                                @keydown.enter.prevent="addRow()" />
                         </td>
 
                         <!-- Total Price -->
                         <td class="p-0 border border-gray-300" style="width: 12%;">
                             <input type="text"
-                                   class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
-                                   style="outline: none; box-shadow: none;"
-                                   x-model.number="row.total_price"
-                                   readonly />
+                                class="w-full h-full text-sm text-gray-700 bg-transparent border-none px-2 py-2"
+                                style="outline: none; box-shadow: none;"
+                                x-model.number="row.total_price"
+                                readonly
+                                @keydown.enter.prevent="addRow()" />
                         </td>
 
                         <!-- Actions -->
