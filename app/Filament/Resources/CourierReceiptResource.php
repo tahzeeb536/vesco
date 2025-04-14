@@ -153,8 +153,8 @@ class CourierReceiptResource extends Resource
                             ->label('Type')
                             ->options(function () {
                                 return [
-                                    'Package' => 'Package',
-                                    'Docuemnts' => 'Docuemnts'
+                                    'package' => 'Package',
+                                    'documents' => 'Documents'
                                 ];
                             })
                             ->columnSpan(4),
