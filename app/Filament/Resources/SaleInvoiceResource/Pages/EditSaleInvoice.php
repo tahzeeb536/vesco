@@ -33,24 +33,32 @@ class EditSaleInvoice extends EditRecord
             $existingItems = $saleInvoice->items->keyBy('id');
 
             foreach ($items as $item) {
-                if (isset($item['id']) && $existingItems->has($item['id'])) {
-                    $existingItem = $existingItems->get($item['id']);
-                    $existingItem->update([
-                        'variant_id' => $item['variant_id'],
-                        'quantity' => $item['quantity'],
-                        'unit_price' => $item['unit_price'],
-                        'total_price' => $item['total_price'],
-                    ]);
 
+                $variant = \App\Models\ProductVariant::find($item['variant_id']);
+
+                $data = [
+                    'variant_id'    => $item['variant_id'],
+                    'product_name'  => $variant?->product?->name,
+                    'article_number'=> $variant?->product?->article_number,
+                    'size'          => $variant?->size?->name,
+                    'color'         => $variant?->color?->name,
+                    'quantity'      => $item['quantity'],
+                    'unit_price'    => $item['unit_price'],
+                    'total_price'   => $item['total_price'],
+                ];
+
+                if (isset($item['id']) && $existingItems->has($item['id'])) {
+                    // Update the existing record with new details
+                    $existingItem = $existingItems->get($item['id']);
+                    $existingItem->update($data);
+    
+                    // Remove from the collection as it's processed
                     $existingItems->forget($item['id']);
                 } else {
-                    SaleInvoiceItem::create([
+                    // Create a new sale invoice item record with full details
+                    \App\Models\SaleInvoiceItem::create(array_merge([
                         'sale_invoice_id' => $saleInvoice->id,
-                        'variant_id' => $item['variant_id'],
-                        'quantity' => $item['quantity'],
-                        'unit_price' => $item['unit_price'],
-                        'total_price' => $item['total_price'],
-                    ]);
+                    ], $data));
                 }
             }
 
