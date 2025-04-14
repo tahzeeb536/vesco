@@ -28,6 +28,17 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
     addRow() {
         this.rows.push({ id: Date.now(), variant_id: '', variant_name: '', product_name: '', article_number: '', size: '', color: '', quantity: 1, discount: 0, unit_price: 0, total_price: 0 });
         this.syncOrderItems();
+        this.$nextTick(() => {
+            // Assuming the variant input is in the first cell of each row:
+            const newRowInput = $el.querySelector('table tbody tr:last-child td:nth-child(1) input');
+            if (newRowInput) {
+                newRowInput.focus();
+                // Optionally, select the contents to let the user overwrite the default
+                setTimeout(() => {
+                    newRowInput.select();
+                }, 0);
+            }
+        });
     },
     removeRow(id) {
         this.rows = this.rows.filter(row => row.id !== id);
@@ -106,6 +117,13 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                         row.unit_price = selectedVariant.customer_price; // Set unit price
                                         calculateTotal(row); // Recalculate the total
                                         isOpen = false; 
+                                        const nextInput = $el.closest('tr').querySelector('td:nth-child(2) input');
+                                        if (nextInput) {
+                                            nextInput.focus();
+                                            setTimeout(() => {
+                                                nextInput.select();
+                                            }, 0);
+                                        }
                                     }" />
                                 
                                 <!-- Hidden Input for Variant ID -->
@@ -122,7 +140,15 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                                 row.variant_name = variant.name;
                                                 row.unit_price = variant.customer_price;
                                                 calculateTotal(row);
-                                                isOpen = false;"
+                                                isOpen = false;
+                                                const nextInput2 = $el.closest('tr').querySelector('td:nth-child(2) input');
+                                                if (nextInput2) {
+                                                    nextInput2.focus();
+                                                    setTimeout(() => {
+                                                        nextInput2.select();
+                                                    }, 0);
+                                                }
+                                                "
                                             class="px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100"
                                             :class="{'bg-gray-200': selectedIndex === i}"
                                             :id="'variant-item-' + i">
@@ -140,7 +166,8 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
                                    style="outline: none; box-shadow: none;"
                                    x-model.number="row.quantity"
                                    min="1"
-                                   @input="calculateTotal(row)" />
+                                   @input="calculateTotal(row)"
+                                   @keydown.enter.prevent="addRow()" />
                         </td>
 
                         <!-- Unit Price -->
