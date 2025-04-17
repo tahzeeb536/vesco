@@ -200,10 +200,10 @@
     						<div class="party">
     							<h3 contenteditable="true">PERFORMA INVOICE : <span style="font-size:15px;;" class="editable">{{ $saleInvoice->customer->full_name }}</span></h3>
     							<div contenteditable="true" style="width:100%; overflow-wrap: break-word;" class="editable">
-                                  <b>  SHIP TO : </b> {{ $saleInvoice->customer->address}} <br>
+                                  <b>  SHIP TO : </b> {{ $saleInvoice->customer->organization }} {{ $saleInvoice->customer->address}} <br>
                                 </div>
                                 <div contenteditable="true" class="editable" style="width:100%; overflow-wrap: break-word;" rows="3">
-								{{ $saleInvoice->customer->post_code }} {{ $saleInvoice->customer->city }}, {{ $saleInvoice->customer->state }}, {{ $saleInvoice->customer->country }}
+									{{ $saleInvoice->customer->post_code }} {{ $saleInvoice->customer->city }}, {{ $saleInvoice->customer->state }}, {{ $saleInvoice->customer->country }}
                                 </div>
 
     							<strong contenteditable="true" class="editable">Phone : </strong> <span contenteditable="true">{{ $saleInvoice->customer->phone }}</span>
@@ -221,20 +221,20 @@
     						</div>
     						<div class="party" style="padding:0px 0 0 0; overflow:hidden;">
 									<div style="display: flex;">
-										<div contenteditable="true" style="font-weight:bold; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 140px;" class="editable"><strong>DATE : </strong> {{ \Carbon\Carbon::parse($saleInvoice->invoice_date)->format('Y-m-d') }}</div>
-										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:170px;" class="editable"><strong>TERM : </strong> {{ $saleInvoice->term }}</div>
+										<div contenteditable="true" style="font-weight:bold; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 160px;" class="editable"><strong>DATE : </strong> {{ \Carbon\Carbon::parse($saleInvoice->invoice_date)->format('Y-m-d') }}</div>
+										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:150px;" class="editable"><strong>TERM : </strong> {{ $saleInvoice->term }}</div>
 									</div>
 									<div style="display: flex;">
-                                    	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 140px;" rows="3"><strong>Invoice : </strong> {{ $saleInvoice->invoice_number }}</div>
-										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:170px;" class="editable"><strong>P.O : </strong>{{ (!empty($saleInvoice->po_no)) ? $saleInvoice->po_no : 'N/A' }}</div>
+                                    	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 160px;" rows="3"><strong>Invoice : </strong> {{ $saleInvoice->invoice_number }}</div>
+										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:150px;" class="editable"><strong>P.O : </strong>{{ (!empty($saleInvoice->po_no)) ? $saleInvoice->po_no : 'N/A' }}</div>
 									</div>
 									<div style="display: flex;">
-                                    	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 140px;" rows="3"><strong>NTN No: </strong> 2130732-6</div>
-										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:170px;" class="editable"><strong>BANK : </strong>{{ $saleInvoice->bank_name }}</div>
+                                    	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; border-right:1px solid #000; width: 160px;" rows="3"><strong>NTN No: </strong> 2130732-6</div>
+										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:150px;" class="editable"><strong>BANK : </strong>{{ $saleInvoice->bank_name }}</div>
 									</div>
 									<div style="display: flex;">
-                                    	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-right:1px solid #000; width: 140px;" rows="3"><strong>HS CODE : </strong> {{ $saleInvoice->hs_code }}</div>
-										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:170px;" class="editable">
+                                    	<div contenteditable="true" class="editable" id="" style="width:-webkit-fill-available; padding:8px; border-right:1px solid #000; width: 160px;" rows="3"><strong>HS CODE : </strong> {{ $saleInvoice->hs_code }}</div>
+										<div contenteditable="true" style="font-weight:normal; width:-webkit-fill-available; padding:8px; border-bottom:1px solid #000; width:150px;" class="editable">
                                             <strong>Shipping : </strong>{{ $saleInvoice->shipping }}
                                         </div>
 
