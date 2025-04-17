@@ -200,10 +200,10 @@
     						<div class="party">
     							<h3 contenteditable="true">PERFORMA INVOICE : <span style="font-size:15px;;" class="editable">{{ $saleInvoice->customer->full_name }}</span></h3>
     							<div contenteditable="true" style="width:100%; overflow-wrap: break-word;" class="editable">
-                                  <b>  SHIP TO : </b> {{ $saleInvoice->customer->organization }} {{ $saleInvoice->customer->address}} <br>
+                                  <b>  SHIP TO : </b> {{ $saleInvoice->customer->organization }} <br>
                                 </div>
                                 <div contenteditable="true" class="editable" style="width:100%; overflow-wrap: break-word;" rows="3">
-									{{ $saleInvoice->customer->post_code }} {{ $saleInvoice->customer->city }}, {{ $saleInvoice->customer->state }}, {{ $saleInvoice->customer->country }}
+									{{ $saleInvoice->customer->address . ' ' . $saleInvoice->customer->post_code . ' ' . $saleInvoice->customer->city . (!empty($saleInvoice->customer->state) ? ', ' . $saleInvoice->customer->state : '') . (!empty($saleInvoice->customer->country) ? ', ' . $saleInvoice->customer->country : '') }}
                                 </div>
 
     							<strong contenteditable="true" class="editable">Phone : </strong> <span contenteditable="true">{{ $saleInvoice->customer->phone }}</span>
