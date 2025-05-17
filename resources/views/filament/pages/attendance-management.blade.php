@@ -46,13 +46,23 @@
                     </td>
 
                     <td class="px-2 py-1">
-                        <input type="time" wire:model="attendances.{{ $index }}.clock_in"
-                            class="w-full rounded border-gray-300 shadow-sm text-xs" />
+                        <input
+                            type="time"
+                            x-data
+                            x-on:change.debounce.500ms="$wire.calculateWorkingTime({{ $index }})"
+                            wire:model="attendances.{{ $index }}.clock_in"
+                            class="w-full rounded border-gray-300 shadow-sm text-xs"
+                        />
                     </td>
 
                     <td class="px-2 py-1">
-                        <input type="time" wire:model="attendances.{{ $index }}.clock_out"
-                            class="w-full rounded border-gray-300 shadow-sm text-xs" />
+                        <input
+                            type="time"
+                            x-data
+                            x-on:change.debounce.500ms="$wire.calculateWorkingTime({{ $index }})"
+                            wire:model="attendances.{{ $index }}.clock_out"
+                            class="w-full rounded border-gray-300 shadow-sm text-xs"
+                        />
                     </td>
 
                     <td class="px-1 py-1 text-center">

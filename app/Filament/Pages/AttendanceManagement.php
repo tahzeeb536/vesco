@@ -266,4 +266,59 @@ class AttendanceManagement extends Page implements HasTable
 
         $this->reset(['selectedEmployeeId']);
     }
+
+    public function updatedAttendances($value, $key)
+    {
+        if (preg_match('/^(\d+)\.(clock_in|clock_out)$/', $key, $matches)) {
+            $index = (int)$matches[1];
+            $this->calculateWorkingTime($index);
+        }
+    }
+
+
+    public function calculateWorkingTime($index)
+    {
+        $attendance = $this->attendances[$index];
+
+        $clockIn = $attendance['clock_in'] ?? null;
+        $clockOut = $attendance['clock_out'] ?? null;
+
+        if (!$clockIn || !$clockOut) {
+            return;
+        }
+
+        try {
+            $in = Carbon::createFromFormat('H:i', $clockIn);
+            $out = Carbon::createFromFormat('H:i', $clockOut);
+
+            // Ensure checkout is after checkin
+            if ($out->lessThanOrEqualTo($in)) {
+                $this->attendances[$index]['hours_worked'] = 0;
+                $this->attendances[$index]['minutes_worked'] = 0;
+                $this->attendances[$index]['overtime_hours'] = 0;
+                $this->attendances[$index]['overtime_minutes'] = 0;
+                return;
+            }
+
+            // Total working minutes minus 60-minute break
+            $totalMinutes = $in->diffInMinutes($out) - 60;
+            $totalMinutes = max(0, $totalMinutes); // Don't allow negative
+
+            // Regular work: up to 8 hours = 480 minutes
+            $workMinutes = min(480, $totalMinutes);
+            $overtimeMinutes = max(0, $totalMinutes - 480);
+
+            $this->attendances[$index]['hours_worked'] = intdiv($workMinutes, 60);
+            $this->attendances[$index]['minutes_worked'] = $workMinutes % 60;
+            $this->attendances[$index]['overtime_hours'] = intdiv($overtimeMinutes, 60);
+            $this->attendances[$index]['overtime_minutes'] = $overtimeMinutes % 60;
+        } catch (\Exception $e) {
+            // Handle invalid times gracefully
+            $this->attendances[$index]['hours_worked'] = 0;
+            $this->attendances[$index]['minutes_worked'] = 0;
+            $this->attendances[$index]['overtime_hours'] = 0;
+            $this->attendances[$index]['overtime_minutes'] = 0;
+        }
+    }
+
 }
