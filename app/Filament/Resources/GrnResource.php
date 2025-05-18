@@ -33,9 +33,33 @@ class GrnResource extends Resource
                 Forms\Components\Select::make('purchase_order_id')
                     ->label('Purchase Order Number')
                     ->required()
-                    ->relationship('purchase_order', 'purchase_order_number')
                     ->searchable()
                     ->preload()
+                    ->options(function () {
+                        return PurchaseOrder::with('vendor')
+                            ->get()
+                            ->mapWithKeys(function ($po) {
+                                return [$po->id => "{$po->purchase_order_number} ( {$po->vendor?->first_name} {$po->vendor?->first_name} )"];
+                            })
+                            ->toArray();
+                    })
+                    ->getSearchResultsUsing(function (string $search) {
+                        return PurchaseOrder::with('vendor')
+                            ->where('purchase_order_number', 'like', "%{$search}%")
+                            ->orWhereHas('vendor', function ($query) use ($search) {
+                                $query->where('name', 'like', "%{$search}%");
+                            })
+                            ->limit(50)
+                            ->get()
+                            ->mapWithKeys(function ($po) {
+                                return [$po->id => "{$po->purchase_order_number} - {$po->vendor?->name}"];
+                            })
+                            ->toArray();
+                    })
+                    ->getOptionLabelUsing(function ($value) {
+                        $po = PurchaseOrder::with('vendor')->find($value);
+                        return $po ? "{$po->purchase_order_number} - {$po->vendor?->name}" : '';
+                    })
                     ->reactive()
                     ->afterStateUpdated(function ($state, callable $set) {
                         if ($state) {
@@ -45,7 +69,7 @@ class GrnResource extends Resource
                                     'variant_id' => $item->variant_id,
                                     'shelf_id' => $item->shelf_id,
                                     'ordered_quantity' => $item->quantity,
-                                    'received_quantity' => $item->quantity, 
+                                    'received_quantity' => $item->quantity,
                                     'unit_price' => $item->unit_price ?? 0,
                                     'total_price' => ($item->unit_price ?? 0) * $item->quantity,
                                 ];
@@ -54,6 +78,7 @@ class GrnResource extends Resource
                             $set('items', $items);
                         }
                     }),
+
                 Forms\Components\DatePicker::make('received_date')
                     ->label('Received Date')
                     ->default(now())
