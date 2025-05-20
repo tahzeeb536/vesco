@@ -38,10 +38,10 @@ $items = (isset($this->record)) ? $this->record->items()->with('variant')->get()
     }
 }" 
 x-init="
-    $watch('vendor_id', () => {
+    <!-- $watch('vendor_id', () => {
         rows = [{ id: Date.now(), variant_id: '', variant_name: '', quantity: 1, unit_price: 0, total_price: 0 }];
         syncOrderItems();
-    });
+    }); -->
 ">
     <div class="overflow-x-auto relative bg-gray-200" style="height: 350px; overflow-y: auto;">
         <table class="min-w-full table-auto border border-gray-300" style="width: 100%;">

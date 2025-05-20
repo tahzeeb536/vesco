@@ -47,9 +47,8 @@ class PurchaseOrderResource extends Resource
                     ->nullable(),
 
                 Forms\Components\Hidden::make('order_items')
-                    ->required()
-                    ->reactive()
-                    ->dehydrated(true), 
+                    ->dehydrated(false)
+                    ->reactive(false),
 
                 Forms\Components\Grid::make(1)
                     ->schema([
