@@ -47,12 +47,13 @@ class GrnResource extends Resource
                         return PurchaseOrder::with('vendor')
                             ->where('purchase_order_number', 'like', "%{$search}%")
                             ->orWhereHas('vendor', function ($query) use ($search) {
-                                $query->where('name', 'like', "%{$search}%");
+                                $query->where('first_name', 'like', "%{$search}%")
+                                    ->orWhere('last_name', 'like', "%{$search}%");
                             })
                             ->limit(50)
                             ->get()
                             ->mapWithKeys(function ($po) {
-                                return [$po->id => "{$po->purchase_order_number} - {$po->vendor?->name}"];
+                                return [$po->id => "{$po->purchase_order_number} ( {$po->vendor?->first_name} {$po->vendor?->last_name} )"];
                             })
                             ->toArray();
                     })
@@ -158,6 +159,10 @@ class GrnResource extends Resource
                                 ->required()
                                 ->reactive()
                                 ->readOnly(),
+
+                            Forms\Components\TextInput::make('remarks')
+                                ->label('Remarks')
+                                ->nullable(),
                         ])
                         // ->cloneable()
                         ->minItems(1)

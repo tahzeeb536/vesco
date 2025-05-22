@@ -12,7 +12,7 @@ class GrnItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['grn_id', 'variant_id', 'shelf_id', 'ordered_quantity', 'received_quantity', 'unit_price', 'total_price'];
+    protected $fillable = ['grn_id', 'variant_id', 'shelf_id', 'ordered_quantity', 'received_quantity', 'unit_price', 'total_price', 'remarks'];
 
 
     public function grn() : BelongsTo
