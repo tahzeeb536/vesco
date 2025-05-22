@@ -234,7 +234,6 @@ class AttendanceManagement extends Page implements HasTable
     
         ];
     }
-    
 
 
     public function saveAttendance(array $data)
