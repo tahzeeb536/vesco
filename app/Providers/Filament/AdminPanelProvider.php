@@ -73,6 +73,7 @@ class AdminPanelProvider extends PanelProvider
                 'Customers',
                 'Vendors',
                 'Reports',
-            ]);
+            ])
+            ->sidebarWidth('16rem');
     }
 }
