@@ -24,7 +24,7 @@ class GrnResource extends Resource
     protected static ?string $navigationGroup = 'Stock Management';
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $navigationLabel = 'Goods Received (GRN)';
+    protected static ?string $navigationLabel = 'Products Received';
 
     public static function form(Form $form): Form
     {
@@ -233,12 +233,12 @@ class GrnResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Goods Received (GRN)';
+        return 'Products Received';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Goods Received (GRN)';
+        return 'Products Received';
     }
 
     

@@ -30,6 +30,6 @@ class EditGrn extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Edit Goods Received (GRN)';
+        return 'Edit Products Received';
     }
 }

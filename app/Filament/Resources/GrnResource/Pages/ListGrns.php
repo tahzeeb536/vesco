@@ -19,6 +19,6 @@ class ListGrns extends ListRecords
 
     public function getTitle(): string
     {
-        return 'Goods Received (GRN)';
+        return 'Products Received';
     }
 }

@@ -19,6 +19,6 @@ class ViewGrn extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'View Goods Received (GRN)';
+        return 'View Products Received';
     }
 }
