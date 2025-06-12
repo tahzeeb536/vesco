@@ -117,13 +117,57 @@ class GrnResource extends Resource
                                     }
                                 }),
                             
+                            Forms\Components\Select::make('room_id')
+                                ->label('Room')
+                                ->options(\App\Models\Room::pluck('name', 'id'))
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    $set('rack_id', null);
+                                    $set('shelf_id', null);
+                                })
+                                ->required()
+                                ->afterStateHydrated(function (callable $set, callable $get) {
+                                    $shelfId = $get('shelf_id');
+                                    if (!$shelfId) return;
+
+                                    $shelf = \App\Models\Shelf::with('rack.room')->find($shelfId);
+                                    if ($shelf?->rack?->room) {
+                                        $set('room_id', $shelf->rack->room->id);
+                                    }
+                                }),
+
+                            Forms\Components\Select::make('rack_id')
+                                ->label('Rack')
+                                ->options(function (callable $get) {
+                                    $roomId = $get('room_id');
+                                    if (!$roomId) return [];
+                                    return \App\Models\Rack::where('room_id', $roomId)->pluck('name', 'id');
+                                })
+                                ->reactive()
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    $set('shelf_id', null);
+                                })
+                                ->required()
+                                ->afterStateHydrated(function (callable $set, callable $get) {
+                                    $shelfId = $get('shelf_id');
+                                    if (!$shelfId) return;
+
+                                    $shelf = \App\Models\Shelf::with('rack')->find($shelfId);
+                                    if ($shelf?->rack) {
+                                        $set('rack_id', $shelf->rack->id);
+                                    }
+                                }),
+
+
                             Forms\Components\Select::make('shelf_id')
                                 ->label('Shelf')
-                                ->options(\App\Models\Shelf::pluck('name', 'id'))
-                                ->required()
-                                ->searchable()
-                                ->preload()
-                                ->debounce(500),
+                                ->options(function (callable $get) {
+                                    $rackId = $get('rack_id');
+                                    if (!$rackId) return [];
+                                    return \App\Models\Shelf::where('rack_id', $rackId)->pluck('name', 'id');
+                                })
+                                ->required(),
+
 
                             Forms\Components\Hidden::make('ordered_quantity')
                                 ->default(0)
@@ -168,11 +212,11 @@ class GrnResource extends Resource
                         ->minItems(1)
                         ->colStyles(function(){
                             return [
-                                'variant_id' => 'width: 45%;',
-                                'shelf_id' => 'width: 25%',
-                                'received_quantity' => 'width: 10%',
-                                'unit_price' => 'width: 10%',
-                                'total_price' => 'width: 10%',
+                                'variant_id' => 'width: 25%;',
+                                // 'shelf_id' => 'width: 25%',
+                                // 'received_quantity' => 'width: 10%',
+                                // 'unit_price' => 'width: 10%',
+                                // 'total_price' => 'width: 10%',
                             ];
                         }),
                 ])
