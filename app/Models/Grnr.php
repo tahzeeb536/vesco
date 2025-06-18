@@ -26,7 +26,7 @@ class Grnr extends Model
         static::creating(function ($grnr) {
             if (is_null($grnr->grnr_number)) {
                 $lastGrn = self::latest('id')->first();
-                $grnr->grnr_number = $lastGrn ?  'GRNR-' . $lastGrn->id + 1 : 'GRNR-' . 1;
+                $grnr->grnr_number = $lastGrn ?  'PRT-' . $lastGrn->id + 1 : 'PRT-' . 1;
 
             }
         });

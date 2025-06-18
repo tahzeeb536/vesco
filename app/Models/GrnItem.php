@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Grn;
 use App\Models\Grnr;
+use App\Models\Shelf;
 
 class GrnItem extends Model
 {
@@ -23,6 +24,11 @@ class GrnItem extends Model
     public function variant() : BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id', 'id');
+    }
+
+    public function shelf() : BelongsTo
+    {
+        return $this->belongsTo(Shelf::class, 'shelf_id', 'id');
     }
 
     protected static function boot()

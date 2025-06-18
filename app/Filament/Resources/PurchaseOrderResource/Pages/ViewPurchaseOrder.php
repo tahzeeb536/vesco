@@ -19,14 +19,12 @@ class ViewPurchaseOrder extends ViewRecord
             Actions\EditAction::make(),
             Actions\Action::make('print_po')
                 ->label('Print P.O')
-                // ->icon('heroicon-o-document-arrow-down')
                 ->color('success')
                 ->url(fn () => $this->getPrintPoUrl())
                 ->openUrlInNewTab(),
             Actions\Action::make('print_po')
                 ->label('Print P.O W/O Price')
                 ->color('success')
-                // ->icon('heroicon-o-document-arrow-down')
                 ->url(fn () => $this->getPrintPoNoPriceUrl())
                 ->openUrlInNewTab(),
         ];

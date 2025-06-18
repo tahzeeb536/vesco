@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PurchaseOrder;
+use App\Models\GRN;
+use App\Models\GRNR;
 use App\Models\PackagingList;
 use App\Models\LetterHead;
 use App\Models\SaleInvoice;
@@ -25,6 +27,26 @@ class PrintDocsController extends Controller
     public function printPONoPrice($record) {
         $purchaseOrder = PurchaseOrder::with('vendor', 'items')->findOrFail($record);
         return view('pdf.print-po-no-price', compact('purchaseOrder'));
+    }
+
+    public function printPR($record) {
+        $productsReceived = GRN::with('purchase_order', 'items')->findOrFail($record);
+        return view('pdf.print-pr', compact('productsReceived'));
+    }
+
+    public function printPRNoPrice($record) {
+        $purchaseOrder = PurchaseOrder::with('vendor', 'items')->findOrFail($record);
+        return view('pdf.print-po-no-price', compact('purchaseOrder'));
+    }
+
+    public function printPRT($record) {
+        $productsReturned = GRNR::with('grn', 'items')->findOrFail($record);
+        return view('pdf.print-prt', compact('productsReturned'));
+    }
+
+    public function printPRTNoPrice($record) {
+        $productsReturned = GRNR::with('grn', 'items')->findOrFail($record);
+        return view('pdf.print-prt-no-price', compact('productsReturned'));
     }
 
     public function print_letter_head_with_logo($record) {

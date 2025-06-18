@@ -14,11 +14,30 @@ class ViewGrnr extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            Actions\Action::make('print_prt')
+                ->label('Print PRT')
+                ->color('success')
+                ->url(fn () => $this->getPrintPrtUrl())
+                ->openUrlInNewTab(),
+            Actions\Action::make('print_prt')
+                ->label('Print PRT W/O Price')
+                ->color('success')
+                ->url(fn () => $this->getPrintPrtNoPriceUrl())
+                ->openUrlInNewTab(),
         ];
+    }
+
+    protected function getPrintPrtUrl()
+    {
+        return route('print_prt', ['record' => $this->record->id]);
+    }
+
+    protected function getPrintPrtNoPriceUrl() {
+        return route('print_prt_no_price', ['record' => $this->record->id]);
     }
 
     public function getTitle(): string
     {
-        return 'View Goods Returned (GRNR)';
+        return 'View Products Returned (PRT)';
     }
 }

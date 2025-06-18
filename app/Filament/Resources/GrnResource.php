@@ -24,7 +24,7 @@ class GrnResource extends Resource
     protected static ?string $navigationGroup = 'Stock Management';
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $navigationLabel = 'Products Received';
+    protected static ?string $navigationLabel = 'Products Received (PR)';
 
     public static function form(Form $form): Form
     {
@@ -229,11 +229,15 @@ class GrnResource extends Resource
             ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('grn_number')
-                    ->label('GRN Number')
+                    ->label('PR Number')
                     ->searchable(),
                     
                 Tables\Columns\TextColumn::make('purchase_order.purchase_order_number')
-                    ->label('Purchase Order Number')
+                    ->label('PO Number')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('purchase_order.vendor.full_name')
+                    ->label('Vendor')
                     ->searchable(),
                     
                 Tables\Columns\TextColumn::make('received_date')

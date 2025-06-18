@@ -30,6 +30,6 @@ class EditGrnr extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Edit Goods Returned (GRNR)';
+        return 'Edit Products Returned (PRT)';
     }
 }

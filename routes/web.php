@@ -41,6 +41,12 @@ Route::get('/stock-report/pdf', [ReportsController::class, 'downloadPdf'])->name
 Route::get('/purchase-order/print-po/{record}', [PrintDocsController::class, 'printPO'])->name('print_po');
 Route::get('/purchase-order/print-po-no-price/{record}', [PrintDocsController::class, 'printPONoPrice'])->name('print_po_no_price');
 
+Route::get('/products-received/print-pr/{record}', [PrintDocsController::class, 'printPR'])->name('print_pr');
+Route::get('/products-received/print-pr-no-price/{record}', [PrintDocsController::class, 'printPRNoPrice'])->name('print_pr_no_price');
+
+Route::get('/products-returned/print-prt/{record}', [PrintDocsController::class, 'printPRT'])->name('print_prt');
+Route::get('/products-returned/print-prt-no-price/{record}', [PrintDocsController::class, 'printPRTNoPrice'])->name('print_prt_no_price');
+
 
 Route::get('/letter-head/print-with-logo/{record}', [PrintDocsController::class, 'print_letter_head_with_logo'])->name('print_letter_head_with_logo');
 Route::get('/letter-head/print-without-logo/{record}', [PrintDocsController::class, 'print_letter_head_without_logo'])->name('print_letter_head_without_logo');

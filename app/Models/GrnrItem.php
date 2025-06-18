@@ -17,6 +17,7 @@ class GrnrItem extends Model
         'returned_quantity',
         'unit_price',
         'total_price',
+        'reason'
     ];
 
     protected static function boot()

@@ -22,14 +22,14 @@ class GrnrResource extends Resource
     protected static ?string $navigationGroup = 'Stock Management';
     protected static ?int $navigationSort = 6;
 
-    protected static ?string $navigationLabel = 'Goods Returned (GRNR)';
+    protected static ?string $navigationLabel = 'Products Returned (PRT)';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Select::make('grn_id')
-                    ->label('GRN Number')
+                    ->label('PR Number')
                     // ->relationship('grn', 'grn_number')
                     ->required()
                     ->searchable()
@@ -64,7 +64,7 @@ class GrnrResource extends Resource
                     ->required(),
                 
                 Forms\Components\Textarea::make('reason')
-                    ->label('Reason to return')
+                    ->label('Note')
                     ->nullable(),
 
                 Forms\Components\Grid::make(1)->schema([
@@ -107,6 +107,10 @@ class GrnrResource extends Resource
                                     $unitPrice = $get('unit_price') ?? 0;
                                     $set('total_price', round($state * $unitPrice, 2));
                                 }),
+                            
+                            Forms\Components\TextInput::make('reason')
+                                ->label('Fault')
+                                ->required(),
 
                             Forms\Components\TextInput::make('unit_price')
                                 ->label('Unit Price')
@@ -133,6 +137,10 @@ class GrnrResource extends Resource
                         ->colStyles(function(){
                             return [
                                 'variant_id' => 'width: 40%;',
+                                'returned_quantity' => 'width: 10%;',
+                                'reason' => 'width: 30%;',
+                                'unit_price' => 'width: 10%;',
+                                'total_price' => 'width: 10%;',
                             ];
                         }),
                     ]),
@@ -146,11 +154,19 @@ class GrnrResource extends Resource
             ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('grnr_number')
-                    ->label('GRNR Number')
+                    ->label('PRT Number')
                     ->searchable(),
                     
                 Tables\Columns\TextColumn::make('grn.grn_number')
-                    ->label('GRN Number')
+                    ->label('PR Number')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('grn.purchase_order.purchase_order_number')
+                    ->label('PO Number')
+                    ->searchable(),
+                
+                Tables\Columns\TextColumn::make('grn.purchase_order.vendor.full_name')
+                    ->label('Vendor')
                     ->searchable(),
                     
                 Tables\Columns\TextColumn::make('returned_date')
@@ -194,12 +210,12 @@ class GrnrResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return 'Goods Returned (GRNR)';
+        return 'Products Returned (PRT)';
     }
 
     public static function getPluralModelLabel(): string
     {
-        return 'Goods Returned (GRNR)';
+        return 'Products Returned (PRT)';
     }
 
 }
