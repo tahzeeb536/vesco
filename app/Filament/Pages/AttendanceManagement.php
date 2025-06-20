@@ -69,14 +69,29 @@ class AttendanceManagement extends Page implements HasTable
     {
         foreach ($this->attendances as $attendanceData) {
 
-            $overtimeDecimal = $attendanceData['overtime'] ?? 0;
+            // $overtimeDecimal = $attendanceData['overtime'] ?? 0;
 
-            if (!is_numeric($overtimeDecimal)) {
-                $overtimeDecimal = 0;
-            }
+            // if (!is_numeric($overtimeDecimal)) {
+            //     $overtimeDecimal = 0;
+            // }
 
             // $overtimeHours = floor($overtimeDecimal);
             // $overtimeMinutes = round(($overtimeDecimal - $overtimeHours) * 60);
+
+            $breakOut = ($attendanceData['break_out'] ?? '') && $attendanceData['break_out'] !== '00:00:00'
+            ? $attendanceData['break_out']
+            : null;
+
+            $breakIn = ($attendanceData['break_in'] ?? '') && $attendanceData['break_in'] !== '00:00:00'
+            ? $attendanceData['break_in']
+            : null;
+
+            $status = $attendanceData['status'];
+
+            $hoursWorked = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['hours_worked'] ?? 0);
+            $minutesWorked = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['minutes_worked'] ?? 0);
+            $overtimeHours = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['overtime_hours'] ?? 0);
+            $overtimeMinutes = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['overtime_minutes'] ?? 0);
 
             Attendance::updateOrCreate(
                 [
@@ -86,15 +101,15 @@ class AttendanceManagement extends Page implements HasTable
                 [
                     'status' => $attendanceData['status'],
                     'clock_in' => $attendanceData['clock_in'],
-                    'break_out' => $attendanceData['break_out'],
-                    'break_in' => $attendanceData['break_in'],
+                    'break_out' => $breakOut,
+                    'break_in' => $breakIn,
                     'clock_out' => $attendanceData['clock_out'],
-                    'hours_worked' => $attendanceData['hours_worked'],
-                    'minutes_worked' => $attendanceData['minutes_worked'],
+                    'hours_worked' => $hoursWorked,
+                    'minutes_worked' => $minutesWorked,
                     // 'overtime_hours' => (int) $overtimeHours,
                     // 'overtime_minutes' => (int) $overtimeMinutes,
-                    'overtime_hours' => $attendanceData['overtime_hours'],
-                    'overtime_minutes' => $attendanceData['overtime_minutes'],
+                    'overtime_hours' => $overtimeHours,
+                    'overtime_minutes' => $overtimeMinutes,
                 ]
             );
         }
@@ -160,22 +175,25 @@ class AttendanceManagement extends Page implements HasTable
                 if ($breakEnd->greaterThan($breakStart)) {
                     $breakDuration = $breakStart->diffInMinutes($breakEnd);
 
-                    // Lunch break window
-                    $lunchStart = Carbon::createFromTime(13, 0);
-                    $lunchEnd = Carbon::createFromTime(14, 0);
+                    // Define fixed lunch break window
+                    $lunchStart = Carbon::createFromTime(13, 0); // 1:00 PM
+                    $lunchEnd = Carbon::createFromTime(14, 0);   // 2:00 PM
 
-                    // If break is fully inside lunch, do NOT double count (already deducted 60 mins above)
-                    if (
-                        $breakStart->greaterThanOrEqualTo($lunchStart) &&
-                        $breakEnd->lessThanOrEqualTo($lunchEnd)
-                    ) {
-                        // do nothing, already deducted 60
-                    } else {
-                        // Add extra time as additional break
-                        $deductedBreak += $breakDuration;
+                    // Calculate overlap with lunch
+                    $overlapStart = $breakStart->copy()->max($lunchStart);
+                    $overlapEnd = $breakEnd->copy()->min($lunchEnd);
+
+                    $lunchOverlapMinutes = 0;
+                    if ($overlapEnd->greaterThan($overlapStart)) {
+                        $lunchOverlapMinutes = $overlapStart->diffInMinutes($overlapEnd);
                     }
+
+                    // Deduct only the part of break outside the 1–2 PM lunch
+                    $extraBreak = $breakDuration - $lunchOverlapMinutes;
+                    $deductedBreak += $extraBreak;
                 }
             }
+
 
             // If user only has break_out but no break_in (left early)
             if ($breakOut && !$breakIn) {
