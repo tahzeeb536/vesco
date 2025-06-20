@@ -24,7 +24,8 @@
                 <th class="px-3 py-4 text-left font-semibold text-gray-700">Urdu Name</th>
                 <th class="px-2 py-4 text-center font-semibold text-gray-700 w-20">Status</th>
                 <th class="px-2 py-4 text-center font-semibold text-gray-700 w-20">Hours</th>
-                <th class="px-2 py-4 text-center font-semibold text-gray-700 w-24">Overtime</th>
+                <th class="px-2 py-4 text-center font-semibold text-gray-700 w-20">OT h</th>
+                <th class="px-2 py-4 text-center font-semibold text-gray-700 w-20">OT m</th>
                 <th class="px-2 py-4 text-left font-semibold text-gray-700">Clock In</th>
                 <th class="px-2 py-4 text-left font-semibold text-gray-700">Break Out</th>
                 <th class="px-2 py-4 text-left font-semibold text-gray-700">Break In</th>
@@ -64,7 +65,12 @@
                     </td>
 
                     <td class="px-2 py-1 text-center">
-                        <input type="number" step="0.01" wire:model="attendances.{{ $index }}.overtime"
+                        <input type="number" step="1" wire:model="attendances.{{ $index }}.overtime_hours"
+                            class="w-full rounded border-gray-300 shadow-sm text-xs text-center" />
+                    </td>
+
+                    <td class="px-2 py-1 text-center">
+                        <input type="number" step="1" wire:model="attendances.{{ $index }}.overtime_minutes"
                             class="w-full rounded border-gray-300 shadow-sm text-xs text-center" />
                     </td>
 

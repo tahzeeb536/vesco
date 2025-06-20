@@ -75,8 +75,8 @@ class AttendanceManagement extends Page implements HasTable
                 $overtimeDecimal = 0;
             }
 
-            $overtimeHours = floor($overtimeDecimal);
-            $overtimeMinutes = round(($overtimeDecimal - $overtimeHours) * 60);
+            // $overtimeHours = floor($overtimeDecimal);
+            // $overtimeMinutes = round(($overtimeDecimal - $overtimeHours) * 60);
 
             Attendance::updateOrCreate(
                 [
@@ -91,8 +91,10 @@ class AttendanceManagement extends Page implements HasTable
                     'clock_out' => $attendanceData['clock_out'],
                     'hours_worked' => $attendanceData['hours_worked'],
                     'minutes_worked' => $attendanceData['minutes_worked'],
-                    'overtime_hours' => (int) $overtimeHours,
-                    'overtime_minutes' => (int) $overtimeMinutes,
+                    // 'overtime_hours' => (int) $overtimeHours,
+                    // 'overtime_minutes' => (int) $overtimeMinutes,
+                    'overtime_hours' => $attendanceData['overtime_hours'],
+                    'overtime_minutes' => $attendanceData['overtime_minutes'],
                 ]
             );
         }
@@ -123,8 +125,6 @@ class AttendanceManagement extends Page implements HasTable
         }
     }
 
-
-
     public function calculateWorkingTime($index)
     {
         $attendance = $this->attendances[$index];
@@ -142,41 +142,17 @@ class AttendanceManagement extends Page implements HasTable
             $in = Carbon::createFromFormat('H:i', $clockIn);
             $out = Carbon::createFromFormat('H:i', $clockOut);
 
-            // Guard clause: invalid case where out is before in
             if ($out->lessThanOrEqualTo($in)) {
                 $this->resetWorkedTime($index);
                 return;
             }
 
-            // Total duration between clock in and clock out
             $totalMinutes = $in->diffInMinutes($out);
 
-            // Fixed lunch break: always deduct 60 minutes
+            // Always deduct fixed 1-hour lunch break (1 PM - 2 PM)
             $deductedBreak = 60;
 
-            // If break_out is set and break_in is NOT set, assume user left
-            if ($breakOut && !$breakIn) {
-                // Worked only from clock_in to break_out
-                $in = Carbon::createFromFormat('H:i', $clockIn);
-                $breakStart = Carbon::createFromFormat('H:i', $breakOut);
-
-                if ($breakStart->greaterThan($in)) {
-                    $totalMinutes = $in->diffInMinutes($breakStart);
-
-                    $this->attendances[$index]['hours_worked'] = intdiv($totalMinutes, 60);
-                    $this->attendances[$index]['minutes_worked'] = $totalMinutes % 60;
-
-                    $this->attendances[$index]['overtime_hours'] = 0;
-                    $this->attendances[$index]['overtime_minutes'] = 0;
-                } else {
-                    $this->resetWorkedTime($index);
-                }
-
-                return; // Exit here
-            }
-
-
-            // Calculate additional break time if set
+            // Extra break (outside fixed 1–2 PM) should also be deducted
             if ($breakOut && $breakIn) {
                 $breakStart = Carbon::createFromFormat('H:i', $breakOut);
                 $breakEnd = Carbon::createFromFormat('H:i', $breakIn);
@@ -184,19 +160,45 @@ class AttendanceManagement extends Page implements HasTable
                 if ($breakEnd->greaterThan($breakStart)) {
                     $breakDuration = $breakStart->diffInMinutes($breakEnd);
 
-                    // Subtract the fixed lunch hour once; the rest is extra
-                    $extraBreak = max(0, $breakDuration - 60);
-                    $deductedBreak += $extraBreak;
+                    // Lunch break window
+                    $lunchStart = Carbon::createFromTime(13, 0);
+                    $lunchEnd = Carbon::createFromTime(14, 0);
+
+                    // If break is fully inside lunch, do NOT double count (already deducted 60 mins above)
+                    if (
+                        $breakStart->greaterThanOrEqualTo($lunchStart) &&
+                        $breakEnd->lessThanOrEqualTo($lunchEnd)
+                    ) {
+                        // do nothing, already deducted 60
+                    } else {
+                        // Add extra time as additional break
+                        $deductedBreak += $breakDuration;
+                    }
                 }
             }
 
-            // Calculate net worked time
+            // If user only has break_out but no break_in (left early)
+            if ($breakOut && !$breakIn) {
+                $breakStart = Carbon::createFromFormat('H:i', $breakOut);
+                if ($breakStart->greaterThan($in)) {
+                    $totalMinutes = $in->diffInMinutes($breakStart);
+                } else {
+                    $totalMinutes = 0;
+                }
+
+                $this->attendances[$index]['hours_worked'] = intdiv($totalMinutes, 60);
+                $this->attendances[$index]['minutes_worked'] = $totalMinutes % 60;
+                $this->attendances[$index]['overtime_hours'] = 0;
+                $this->attendances[$index]['overtime_minutes'] = 0;
+                return;
+            }
+
+            // Final working minutes
             $netMinutes = max(0, $totalMinutes - $deductedBreak);
 
             $this->attendances[$index]['hours_worked'] = intdiv($netMinutes, 60);
             $this->attendances[$index]['minutes_worked'] = $netMinutes % 60;
 
-            // Optional: calculate overtime if over 8 hours (480 minutes)
             $overtime = max(0, $netMinutes - 480);
             $this->attendances[$index]['overtime_hours'] = intdiv($overtime, 60);
             $this->attendances[$index]['overtime_minutes'] = $overtime % 60;
