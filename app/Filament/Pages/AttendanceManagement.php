@@ -132,12 +132,25 @@ class AttendanceManagement extends Page implements HasTable
 
     public function updated($property, $value)
     {
-        // Listen to any change in these fields
+        // Time fields trigger calculation
         if (preg_match('/^attendances\.(\d+)\.(clock_in|clock_out|break_out|break_in)$/', $property, $matches)) {
             $index = (int) $matches[1];
             $this->calculateWorkingTime($index);
         }
+
+        // Status change: if changed to "Present", recalculate
+        if (preg_match('/^attendances\.(\d+)\.status$/', $property, $matches)) {
+            $index = (int) $matches[1];
+            $status = $this->attendances[$index]['status'];
+
+            if ($status === 'Present') {
+                $this->calculateWorkingTime($index);
+            } else {
+                $this->resetWorkedTime($index);
+            }
+        }
     }
+
 
     public function calculateWorkingTime($index)
     {
