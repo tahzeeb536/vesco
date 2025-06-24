@@ -120,7 +120,6 @@ class AttendanceManagement extends Page implements HasTable
             ->send();
     }
 
-
     protected function table(Table $table): Table
     {
         return $table->query(
@@ -144,10 +143,10 @@ class AttendanceManagement extends Page implements HasTable
     {
         $attendance = $this->attendances[$index];
 
-        $clockIn = $attendance['clock_in'] ?? null;
-        $clockOut = $attendance['clock_out'] ?? null;
-        $breakOut = $attendance['break_out'] ?? null;
-        $breakIn = $attendance['break_in'] ?? null;
+        $clockIn = $this->formatTimeToHM($attendance['clock_in'] ?? null);
+        $clockOut = $this->formatTimeToHM($attendance['clock_out'] ?? null);
+        $breakOut = $this->formatTimeToHM($attendance['break_out'] ?? null);
+        $breakIn = $this->formatTimeToHM($attendance['break_in'] ?? null);
 
         if (!$clockIn || !$clockOut) {
             return;
@@ -224,6 +223,13 @@ class AttendanceManagement extends Page implements HasTable
         } catch (\Exception $e) {
             $this->resetWorkedTime($index);
         }
+    }
+
+    private function formatTimeToHM($time)
+    {
+        if (!$time) return null;
+        if (strlen($time) === 5) return $time; // Already in HH:MM
+        return substr($time, 0, 5); // Trim to HH:MM
     }
 
     private function resetWorkedTime($index)
