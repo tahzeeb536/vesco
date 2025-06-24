@@ -69,29 +69,35 @@ class AttendanceManagement extends Page implements HasTable
     {
         foreach ($this->attendances as $attendanceData) {
 
-            // $overtimeDecimal = $attendanceData['overtime'] ?? 0;
+            // $breakOut = ($attendanceData['break_out'] ?? '') && $attendanceData['break_out'] !== '00:00:00'
+            // ? $attendanceData['break_out']
+            // : null;
 
-            // if (!is_numeric($overtimeDecimal)) {
-            //     $overtimeDecimal = 0;
-            // }
+            // $breakIn = ($attendanceData['break_in'] ?? '') && $attendanceData['break_in'] !== '00:00:00'
+            // ? $attendanceData['break_in']
+            // : null;
 
-            // $overtimeHours = floor($overtimeDecimal);
-            // $overtimeMinutes = round(($overtimeDecimal - $overtimeHours) * 60);
+            // $status = $attendanceData['status'];
 
-            $breakOut = ($attendanceData['break_out'] ?? '') && $attendanceData['break_out'] !== '00:00:00'
-            ? $attendanceData['break_out']
-            : null;
-
-            $breakIn = ($attendanceData['break_in'] ?? '') && $attendanceData['break_in'] !== '00:00:00'
-            ? $attendanceData['break_in']
-            : null;
+            // $hoursWorked = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['hours_worked'] ?? 0);
+            // $minutesWorked = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['minutes_worked'] ?? 0);
+            // $overtimeHours = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['overtime_hours'] ?? 0);
+            // $overtimeMinutes = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['overtime_minutes'] ?? 0);
 
             $status = $attendanceData['status'];
 
-            $hoursWorked = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['hours_worked'] ?? 0);
-            $minutesWorked = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['minutes_worked'] ?? 0);
-            $overtimeHours = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['overtime_hours'] ?? 0);
-            $overtimeMinutes = in_array($status, ['Absent', 'Leave']) ? 0 : ($attendanceData['overtime_minutes'] ?? 0);
+            $isAbsentOrLeave = in_array($status, ['Absent', 'Leave']);
+
+            $clockIn = $isAbsentOrLeave ? null : ($attendanceData['clock_in'] ?? null);
+            $clockOut = $isAbsentOrLeave ? null : ($attendanceData['clock_out'] ?? null);
+            $breakOut = $isAbsentOrLeave ? null : (($attendanceData['break_out'] ?? '') ?: null);
+            $breakIn = $isAbsentOrLeave ? null : (($attendanceData['break_in'] ?? '') ?: null);
+
+            $hoursWorked = $isAbsentOrLeave ? 0 : ($attendanceData['hours_worked'] ?? 0);
+            $minutesWorked = $isAbsentOrLeave ? 0 : ($attendanceData['minutes_worked'] ?? 0);
+            $overtimeHours = $isAbsentOrLeave ? 0 : ($attendanceData['overtime_hours'] ?? 0);
+            $overtimeMinutes = $isAbsentOrLeave ? 0 : ($attendanceData['overtime_minutes'] ?? 0);
+
 
             Attendance::updateOrCreate(
                 [
@@ -106,8 +112,6 @@ class AttendanceManagement extends Page implements HasTable
                     'clock_out' => $attendanceData['clock_out'],
                     'hours_worked' => $hoursWorked,
                     'minutes_worked' => $minutesWorked,
-                    // 'overtime_hours' => (int) $overtimeHours,
-                    // 'overtime_minutes' => (int) $overtimeMinutes,
                     'overtime_hours' => $overtimeHours,
                     'overtime_minutes' => $overtimeMinutes,
                 ]
