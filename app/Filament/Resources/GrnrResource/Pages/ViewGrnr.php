@@ -24,6 +24,7 @@ class ViewGrnr extends ViewRecord
                 ->color('success')
                 ->url(fn () => $this->getPrintPrtNoPriceUrl())
                 ->openUrlInNewTab(),
+            Actions\DeleteAction::make(),
         ];
     }
 
