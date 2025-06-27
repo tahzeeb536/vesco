@@ -86,18 +86,18 @@ class OutOfStock extends Page implements Tables\Contracts\HasTable
                 ->label('Stock')
                 ->sortable()
                 ->formatStateUsing(fn($state) => $state ?? 0),
+                    
+            TextColumn::make('room_name')
+                ->label('Room Name')
+                ->formatStateUsing(fn($state) => $state ?? 'N/A'),
+            
+            TextColumn::make('rack_name')
+                    ->label('Rack Name')
+                    ->formatStateUsing(fn($state) => $state ?? 'N/A'),
 
             TextColumn::make('shelf_name')
                 ->label('Shelf Name')
                 ->formatStateUsing(fn($state) => $state ?? 'N/A'),
-            
-            // TextColumn::make('rack_name')
-            //         ->label('Rack Name')
-            //         ->formatStateUsing(fn($state) => $state ?? 'N/A'),
-                    
-            // TextColumn::make('room_name')
-            //     ->label('Room Name')
-            //     ->formatStateUsing(fn($state) => $state ?? 'N/A'),
 
             // TextColumn::make('store_name')
             //     ->label('Store Name')
