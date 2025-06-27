@@ -64,7 +64,6 @@ class AdminPanelProvider extends PanelProvider
                 'Users',
                 'Employees',
                 'Products',
-                'Stores',
                 'Stock Management',
                 'Packaging Lists',
                 'Expenses',
@@ -73,6 +72,7 @@ class AdminPanelProvider extends PanelProvider
                 'Customers',
                 'Vendors',
                 'Reports',
+                'Stores',
             ])
             ->sidebarWidth('16rem');
     }
