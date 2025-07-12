@@ -76,6 +76,8 @@
                         <th>Size</th>
                         <th>Color</th>
                         <th>Category</th>
+                        <th>Room</th>
+                        <th>Rack</th>
                         <th>Shelf</th>
                         <th>Total Quantity</th>
                     </tr>
@@ -88,6 +90,20 @@
                             <td>{{ optional($record->productVariant->size)->name ?? 'N/A' }}</td>
                             <td>{{ optional($record->productVariant->color)->name ?? 'N/A' }}</td>
                             <td>{{ optional($record->productVariant->product->category)->name ?? 'N/A' }}</td>
+                            <td>
+                                @php
+                                    $rack = $room = 'N/A';
+                                    $shelfId = $record->getFirstShelfIdByVariant($record->productVariant->id);
+                                    $shelf = \App\Models\Shelf::find($shelfId);
+                                    if($shelf) {
+                                        $rackData = $shelf->rack;
+                                        $rack = $rackData?->name;
+                                        $roomData = $rackData->room;
+                                        $room = $roomData?->name;
+                                    } 
+                                @endphp
+                                {{ $room }}</td>
+                            <td>{{ $rack }}</td>
                             <td>{{ $record->getFirstShelfNameByVariant($record->productVariant->id) }}</td>
                             <td>{{ $record->total_quantity }}</td>
                         </tr>

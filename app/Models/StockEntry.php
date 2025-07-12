@@ -69,4 +69,14 @@ class StockEntry extends Model
 
         return $stockEntryWithShelf ? optional($stockEntryWithShelf->shelf)->name : 'N/A';
     }
+
+    public function getFirstShelfIdByVariant($productVariantId)
+    {
+        $stockEntryWithShelf = self::where('product_variant_id', $productVariantId)
+            ->whereNotNull('shelf_id')
+            ->with('shelf')
+            ->first();
+
+        return $stockEntryWithShelf ? optional($stockEntryWithShelf->shelf)->id : 'N/A';
+    }
 }
