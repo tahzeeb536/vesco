@@ -19,11 +19,14 @@ class Grn extends Model
         parent::boot();
 
         static::creating(function ($grn) {
-            if (is_null($grn->grn_number)) {
-                $lastGrn = self::latest('id')->first();
-                $grn->grn_number = $lastGrn ?  'PR-' . $lastGrn->id + 1 : 'PR-' . 1;
-            }
+            $grn->grn_number = 'TEMP-' . uniqid();
         });
+
+        static::created(function ($grn) {
+            $grn->grn_number = 'PR-' . $grn->id;
+            $grn->saveQuietly();
+        });
+
 
         static::deleting(function ($grn) {
             foreach ($grn->items as $item) {

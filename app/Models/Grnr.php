@@ -24,12 +24,14 @@ class Grnr extends Model
         parent::boot();
 
         static::creating(function ($grnr) {
-            if (is_null($grnr->grnr_number)) {
-                $lastGrn = self::latest('id')->first();
-                $grnr->grnr_number = $lastGrn ?  'PRT-' . $lastGrn->id + 1 : 'PRT-' . 1;
-
-            }
+            $grnr->grnr_number = 'TEMP-' . uniqid();
         });
+
+        static::created(function ($grnr) {
+            $grnr->grnr_number = 'PR-' . $grnr->id;
+            $grnr->saveQuietly();
+        });
+
 
         static::deleting(function ($grnr) {
             foreach ($grnr->items as $item) {

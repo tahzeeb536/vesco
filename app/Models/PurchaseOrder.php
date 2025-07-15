@@ -23,17 +23,12 @@ class PurchaseOrder extends Model
         parent::boot();
 
         static::creating(function ($model) {
+            $model->purchase_order_number = 'TEMP-' . uniqid();
+        });
 
-            $lastOrder = self::latest('id')->first();
-
-            if ($lastOrder) {
-                $lastNumber = (int) str_replace('PO-', '', $lastOrder->purchase_order_number);
-                $newNumber = $lastNumber + 1;
-                $model->purchase_order_number = 'PO-' . $newNumber;
-            } else {
-                $model->purchase_order_number = 'PO-1';
-            }
-            
+        static::created(function ($model) {
+            $model->purchase_order_number = 'PO-' . $model->id;
+            $model->saveQuietly();
         });
 
 

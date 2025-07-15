@@ -52,8 +52,8 @@
 				<h1 style="margin:0px 0px 5px 0px; padding:0px;">PRODUCTS RECEIVED</h1>
 				<p>
 					<strong>Dated as : </strong> {{ $productsReceived->order_date }}<br>
-					<strong>PR Number: {{ $productsReceived->grn_number }}</strong><br>
-					<strong>PO Number: {{ $productsReceived->purchase_order->purchase_order_number }}</strong>
+					<strong>PR Number: {{ $productsReceived?->grn_number }}</strong><br>
+					<strong>PO Number: {{ $productsReceived?->purchase_order?->purchase_order_number }}</strong>
 				</p>
 			</td>
 		</tr>
@@ -71,11 +71,11 @@
 			<td>
 				<h2 style="margin:0px 0px 5px 0px; padding:0px;">Shipped from:</h2>
 				<p>
-				<strong>Organization:</strong> {{ $productsReceived->purchase_order->vendor->organization }} <br>
-				<strong>Contact Person:</strong> {{ $productsReceived->purchase_order->vendor->full_name }}<br>
-				<strong>Address: </strong><br> {{ $productsReceived->purchase_order->vendor->address }} <br>
-				<strong>Phone:</strong> {{ $productsReceived->purchase_order->vendor->phone }} <br>
-				<strong>EMail: </strong> {{ $productsReceived->purchase_order->vendor->email }}
+				<strong>Organization:</strong> {{ $productsReceived?->purchase_order?->vendor->organization }} <br>
+				<strong>Contact Person:</strong> {{ $productsReceived?->purchase_order?->vendor->full_name }}<br>
+				<strong>Address: </strong><br> {{ $productsReceived?->purchase_order?->vendor->address }} <br>
+				<strong>Phone:</strong> {{ $productsReceived?->purchase_order?->vendor->phone }} <br>
+				<strong>EMail: </strong> {{ $productsReceived?->purchase_order?->vendor->email }}
 				</p>
 			</td>
 		</tr>

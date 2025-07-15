@@ -53,8 +53,8 @@
 				<p>
 					<strong>Dated as : </strong> {{ $productsReturned->returned_date }}<br>
 					<strong>PRT Number: {{ $productsReturned->grnr_number }}</strong><br>
-					<strong>PR Number: {{ $productsReturned->grn->grn_number }}</strong><br>
-					<strong>PO Number: {{ $productsReturned->grn->purchase_order->purchase_order_number }}</strong>
+					<strong>PR Number: {{ $productsReturned?->grn?->grn_number }}</strong><br>
+					<strong>PO Number: {{ $productsReturned?->grn?->purchase_order?->purchase_order_number }}</strong>
 				</p>
 			</td>
 		</tr>
@@ -72,11 +72,11 @@
 			<td>
 				<h2 style="margin:0px 0px 5px 0px; padding:0px;">Shipped from:</h2>
 				<p>
-				<strong>Organization:</strong> {{ $productsReturned->grn->purchase_order->vendor->organization }} <br>
-				<strong>Contact Person:</strong> {{ $productsReturned->grn->purchase_order->vendor->full_name }}<br>
-				<strong>Address: </strong><br> {{ $productsReturned->grn->purchase_order->vendor->address }} <br>
-				<strong>Phone:</strong> {{ $productsReturned->grn->purchase_order->vendor->phone }} <br>
-				<strong>EMail: </strong> {{ $productsReturned->grn->purchase_order->vendor->email }}
+				<strong>Organization:</strong> {{ $productsReturned?->grn?->purchase_order?->vendor->organization }} <br>
+				<strong>Contact Person:</strong> {{ $productsReturned?->grn?->purchase_order?->vendor->full_name }}<br>
+				<strong>Address: </strong><br> {{ $productsReturned?->grn?->purchase_order?->vendor->address }} <br>
+				<strong>Phone:</strong> {{ $productsReturned?->grn?->purchase_order?->vendor->phone }} <br>
+				<strong>EMail: </strong> {{ $productsReturned?->grn?->purchase_order?->vendor->email }}
 				</p>
 			</td>
 		</tr>
