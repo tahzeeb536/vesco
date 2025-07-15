@@ -33,15 +33,15 @@ class Grnr extends Model
         });
 
 
-        static::deleting(function ($grnr) {
-            foreach ($grnr->items as $item) {
-                $item->delete();
-            }
+        // static::deleting(function ($grnr) {
+        //     foreach ($grnr->items as $item) {
+        //         $item->delete();
+        //     }
 
-            StockEntry::where('source_id', $grnr->id)
-            ->where('source_type', self::class)
-            ->delete();
-        });
+        //     StockEntry::where('source_id', $grnr->id)
+        //     ->where('source_type', self::class)
+        //     ->delete();
+        // });
 
     }
 

@@ -28,16 +28,16 @@ class Grn extends Model
         });
 
 
-        static::deleting(function ($grn) {
-            foreach ($grn->items as $item) {
-                $item->delete();
-            }
+        // static::deleting(function ($grn) {
+        //     foreach ($grn->items as $item) {
+        //         $item->delete();
+        //     }
 
-            StockEntry::where('source_id', $grn->id)
-            ->where('source_type', self::class)
-            ->delete();
+        //     StockEntry::where('source_id', $grn->id)
+        //     ->where('source_type', self::class)
+        //     ->delete();
 
-        });
+        // });
 
     }
 
