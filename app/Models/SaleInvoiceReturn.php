@@ -36,9 +36,9 @@ class SaleInvoiceReturn extends Model
                 $item->delete();
             }
 
-            StockEntry::where('source_id', $sale->id)
-            ->where('source_type', self::class)
-            ->delete();
+            // StockEntry::where('source_id', $sale->id)
+            // ->where('source_type', self::class)
+            // ->delete();
         });
 
     }

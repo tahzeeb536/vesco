@@ -33,9 +33,9 @@ class SaleInvoiceReturnItem extends Model
             $saleItem->sale_invoice_return->updateTotalAmount();
         });
 
-        static::deleting(function ($saleItem) {
-            $saleItem->removeStockEntry();
-        });
+        // static::deleting(function ($saleItem) {
+        //     $saleItem->removeStockEntry();
+        // });
     }
 
     public function sale_invoice_return() : BelongsTo {

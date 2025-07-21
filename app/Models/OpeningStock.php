@@ -21,9 +21,9 @@ class OpeningStock extends Model
             $openingStock->createOrUpdateStockEntry();
         });
 
-        static::deleting(function ($openingStock) {
-            $openingStock->removeStockEntry();
-        });
+        // static::deleting(function ($openingStock) {
+        //     $openingStock->removeStockEntry();
+        // });
     }
 
     public function variant(): BelongsTo

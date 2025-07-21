@@ -39,9 +39,9 @@ class GrnItem extends Model
             $grnItem->updateStockEntry();
         });
 
-        static::deleting(function($grnItem) {
-            $grnItem->removeStockEntry();
-        });
+        // static::deleting(function($grnItem) {
+        //     $grnItem->removeStockEntry();
+        // });
 
     }
 
