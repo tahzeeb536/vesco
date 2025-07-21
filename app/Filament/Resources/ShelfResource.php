@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ShelfResource\Pages;
 use App\Filament\Resources\ShelfResource\RelationManagers;
 use App\Models\Shelf;
+use App\Models\Rack;
+use App\Models\Room;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -28,9 +30,29 @@ class ShelfResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('rack_id')
+                Forms\Components\Select::make('room_id')
+                    ->label('Room')
+                    ->options(Room::pluck('name', 'id'))
+                    ->reactive()
+                    ->afterStateUpdated(fn (callable $set) => $set('rack_id', null))
                     ->required()
-                    ->relationship('rack', 'name'),
+                    ->afterStateHydrated(function ($state, callable $set, $record) {
+                        // Only set on edit, not create
+                        if ($record && $record->rack) {
+                            $set('room_id', $record->rack->room_id);
+                        }
+                    }),
+                Forms\Components\Select::make('rack_id')
+                    ->label('Rack')
+                    ->options(function (callable $get) {
+                        $roomId = $get('room_id');
+                        if (!$roomId) {
+                            return [];
+                        }
+                        return Rack::where('room_id', $roomId)->pluck('name', 'id');
+                    })
+                    ->reactive()
+                    ->required(),
                 Forms\Components\Select::make('status')
                     ->required()
                     ->options([
