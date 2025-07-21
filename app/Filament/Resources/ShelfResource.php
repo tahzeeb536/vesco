@@ -51,6 +51,9 @@ class ShelfResource extends Resource
                 Tables\Columns\TextColumn::make('rack.name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('rack.room.name')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('status')
                     ->boolean()
                     ->sortable(),
