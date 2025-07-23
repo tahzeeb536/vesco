@@ -5,6 +5,8 @@ namespace App\Filament\Resources\StockEntryResource\Pages;
 use App\Filament\Resources\StockEntryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Exports\StockEntriesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ListStockEntries extends ListRecords
 {
@@ -12,8 +14,14 @@ class ListStockEntries extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            // Actions\CreateAction::make(),
+       return [
+        Actions\Action::make('export')
+            ->label('Export Stock Entries')
+            ->icon('heroicon-o-arrow-down-tray')
+            ->action(function () {
+                return Excel::download(new StockEntriesExport(), 'stock-entries.xlsx');
+            })
+            ->color('primary'),
         ];
     }
 }
