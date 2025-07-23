@@ -70,7 +70,6 @@ class StockTransferResource extends Resource
                     ->required()
                     ->searchable()
                     ->debounce(700)
-                    ->disabled()
                     ->helperText(fn (callable $get) => $get('source_shelf_helper'))
                     ->getOptionLabelUsing(function ($value) {
                         return Shelf::find($value)?->name ?? '';
@@ -78,16 +77,17 @@ class StockTransferResource extends Resource
                     
                 Forms\Components\Select::make('destination_shelf_id')
                     ->label('Shelf To')
-                    // ->relationship('destinationShelf', 'name')
-                    ->getSearchResultsUsing(function (string $search) {
-                        return Shelf::query()
-                            ->where('name', 'like', "%{$search}%")
-                            ->limit(50)
-                            ->pluck('name', 'id');
-                    })
-                    ->getOptionLabelUsing(function ($value) {
-                        return Shelf::find($value)?->name ?? '';
-                    })
+                    ->relationship('destinationShelf', 'name')
+                    ->preload()
+                    // ->getSearchResultsUsing(function (string $search) {
+                    //     return Shelf::query()
+                    //         ->where('name', 'like', "%{$search}%")
+                    //         ->limit(50)
+                    //         ->pluck('name', 'id');
+                    // })
+                    // ->getOptionLabelUsing(function ($value) {
+                    //     return Shelf::find($value)?->name ?? '';
+                    // })
                     ->required()
                     ->searchable()
                     ->debounce(700),
